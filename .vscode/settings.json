@@ -1,0 +1,27 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        {
+            "language": "typescript",
+            "autoFix": true
+        }
+    ],
+    "editor.formatOnSave": true,
+    "[javascript]": {
+        "editor.formatOnSave": false
+    },
+    "[typescript]": {
+        "editor.formatOnSave": false
+    },
+    "[markdown]": {
+        "editor.formatOnSave": false
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/coverge": true
+    },
+    "typescript.referencesCodeLens.enabled": true
+}
