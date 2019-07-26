@@ -1,4 +1,4 @@
-# Node API StarterPack
+# TypeScript Node API StarterPack - WORK IN PROGRESS
 
 | Name | Description |
 | ------------------------ | --------------------------------------------------------------------------------------------- |
@@ -20,6 +20,35 @@
 | jest.config.js           | Used to configure Jest running tests written in TypeScript                                    |
 | package.json             | File that contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)                          |
 | tsconfig.json            | Config settings for compiling server code written in TypeScript                               |
+
+## Import path workaround
+
+> module names are considered resource identifiers, and are mapped to the output as they appear in the source
+
+As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not ported over. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found in <https://github.com/microsoft/TypeScript/issues/10866>.
+
+The approach chosen for this project is to:
+
+1. Add a NODE_PATH env variable that points to the dist folder. The path will be taken from an env variable in the system. For deployment we will later set the path in the Dockerfile after copying over the dist.
+
+    ```json
+        "watch-node": "NODE_PATH=$STARTER_PATH nodemon dist/server.js"
+    ```
+
+2. Let the compiler know to look in the src folder for modules.
+
+    ```json
+    {
+        ...
+        "paths": {
+        "*": [
+            "src/*",
+            "node_modules/*",
+            "src/types/*"
+        ]
+        }
+    }
+    ```
 
 ## TypeScript Node Starter
 
