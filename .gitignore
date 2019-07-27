@@ -3,3 +3,4 @@ coverage
 dist/**/*
 
 .env
+.env.prod

@@ -25,7 +25,7 @@
 
 > module names are considered resource identifiers, and are mapped to the output as they appear in the source
 
-As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not ported over. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found in <https://github.com/microsoft/TypeScript/issues/10866>.
+As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not applied to the output. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found in <https://github.com/microsoft/TypeScript/issues/10866>.
 
 The approach chosen for this project is to:
 
@@ -39,13 +39,12 @@ The approach chosen for this project is to:
 
     ```json
     {
-        ...
         "paths": {
-        "*": [
-            "src/*",
-            "node_modules/*",
-            "src/types/*"
-        ]
+            "*": [
+                "src/*",
+                "node_modules/*",
+                "src/types/*"
+            ]
         }
     }
     ```
