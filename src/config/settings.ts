@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 import logger from "util/logger";
 import fs from "fs";
 
+export const PRODUCTION = "production";
+
 if (!fs.existsSync(".env")) {
     logger.error("No .env file configured");
     process.exit(1);
@@ -29,11 +31,16 @@ for (const secret of secrets) {
 let nodeEnv = process.env["NODE_ENV"];
 let mongoURI;
 
-if (nodeEnv === "production") {
+if (nodeEnv === PRODUCTION) {
     mongoURI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}?authSource=admin`;
 } else {
     mongoURI = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
 }
 export const NODE_ENV = nodeEnv;
 export const SESSION_SECRET = process.env["SESSION_SECRET"];
-export const MONGODB_URI = mongoURI;
+export const MONGO_URI = mongoURI;
+export const APP_PORT = 3000;
+export const CORS = [
+    /localhost:\d{4}$/,
+    /domain\.tld$/
+];

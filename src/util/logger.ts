@@ -1,10 +1,8 @@
-import * as winston from "winston";
-import { Logger } from "winston";
-import { NODE_ENV } from "config/secrets";
+import { Logger, createLogger, format, transports } from "winston";
+import { NODE_ENV, PRODUCTION } from "config/settings";
 
-const { createLogger, format, transports } = winston;
 const logger: Logger = createLogger({
-    format: winston.format.combine(
+    format: format.combine(
         // Use these two instead for JSON format
         // format.timestamp(),
         // format.json()
@@ -14,7 +12,7 @@ const logger: Logger = createLogger({
         })
     ),
     transports: [
-        new transports.Console({ level: NODE_ENV === "production" ? "error" : "debug" })
+        new transports.Console({ level: NODE_ENV === PRODUCTION ? "error" : "debug" })
     ]
 });
 
