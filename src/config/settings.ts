@@ -30,11 +30,12 @@ for (const secret of secrets) {
 }
 let nodeEnv = process.env["NODE_ENV"];
 let mongoURI;
+let mongoBase = `${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
 
 if (nodeEnv === PRODUCTION) {
-    mongoURI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}?authSource=admin`;
+    mongoURI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${mongoBase}?authSource=admin`;
 } else {
-    mongoURI = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
+    mongoURI = `mongodb://${mongoBase}`;
 }
 export const NODE_ENV = nodeEnv;
 export const SESSION_SECRET = process.env["SESSION_SECRET"];

@@ -14,6 +14,9 @@ const app = express();
 
 setupExpress(app);
 setupRoutesV1(app);
-// setupPassport(app);
+
+app.route("/*").get((_req, res): void => {
+    res.sendStatus(404);
+});
 
 export default app;
