@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import setupExpress from "config/express";
 import setupRoutesV1 from "config/routes/v1";
-import { MONGO_URI } from "config/settings";
+import { MONGO_URI } from "config/secrets";
 
 mongoose.set("useCreateIndex", true);
 mongoose.connect(MONGO_URI, { useNewUrlParser: true })
