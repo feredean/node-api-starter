@@ -3,16 +3,13 @@ import morgan from "morgan";
 import passport from "passport";
 import compression from "compression";
 import bodyParser from "body-parser";
-import errorHandler from "errorhandler";
 import { Express } from "express";
 
 import logger from "util/logger";
-import { CORS, APP_PORT, NODE_ENV, PRODUCTION } from "config/settings";
+import { CORS, APP_PORT } from "config/settings";
 
 export default (app: Express): void => {
     app.set("port", APP_PORT);
-
-    if (NODE_ENV !== PRODUCTION) app.use(errorHandler());
 
     let corsOptions = {
         origin: function (origin: string, callback: Function): void {
