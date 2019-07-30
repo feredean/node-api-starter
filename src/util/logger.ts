@@ -1,5 +1,13 @@
 import { Logger, createLogger, format, transports } from "winston";
-import { NODE_ENV, PRODUCTION } from "config/settings";
+import { NODE_ENV, PRODUCTION, TEST } from "config/settings";
+
+const logLevel = (): string => {
+    switch (NODE_ENV) {
+        case PRODUCTION: return "error";
+        case TEST: return  "nologging";
+        default: return "debug";
+    }
+};
 
 const logger: Logger = createLogger({
     format: format.combine(
@@ -12,7 +20,7 @@ const logger: Logger = createLogger({
         })
     ),
     transports: [
-        new transports.Console({ level: NODE_ENV === PRODUCTION ? "error" : "debug" })
+        new transports.Console({ level: logLevel() })
     ]
 });
 

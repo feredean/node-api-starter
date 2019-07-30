@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-api-starter
+spec:
+  replicas: 1
+  revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      app: node-api-starter
+  template:
+    metadata:
+      labels:
+        app: node-api-starter
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: nodes
+      containers:
+        - name: node-api-starter
+          image: feredean/node-api-starter
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9100
+          envFrom:
+            - secretRef:
+                name: node-starter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-api-starter
+  labels:
+    app: node-api-starter
+spec:
+  ports:
+    - port: 9100
+      targetPort: 9100
+      protocol: TCP
+      name: http
+  selector:
+    app: node-api-starter
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: node-api-starter
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: node-api-starter
+  targetCPUUtilizationPercentage: 50

@@ -1,20 +1,20 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "extends": [
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
-  },
-  "rules": {
-    "semi": [
-      "error",
-      "always"
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+        "plugin:@typescript-eslint/recommended"
     ],
-    "quotes": [
-      "error",
-      "double"
-    ]
-  }
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "semi": [
+            "error",
+            "always"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ]
+    }
 }

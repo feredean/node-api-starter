@@ -2,51 +2,104 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
+
 jobs:
-  
+  # build the project and prepare it for deployment
   build:
     docker:
       - image: circleci/node:12.6.0
-      - image: circleci/mongo:3.4.4
     working_directory: ~/api
-
     steps:
       - checkout
       - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run: npm install
       - run: npm rebuild
+      # cache node modules
       - save_cache:
-        paths:
-          - node_modules
-        key: v1-dependencies-{{ checksum "package.json" }}
-      - run: npm test
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: npm run build
+      # cache distribution and files needed for deployment
+      - save_cache:
+          key: v1-build-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - dist
+            - package-lock.json
+            - package.json
+            - Dockerfile
 
-  deploy:
-    machine: true
+  # run tests using the cached dependencies
+  test:
+    docker:
+      - image: circleci/node:12.6.0
+      - image: circleci/mongo:4.0
     working_directory: ~/api
     steps:
       - checkout
-      - run:    
-        name: Deploy to private docker registry
-        # TAG to be used when kubernetes is implemented
-        command: |
-          TAG=0.1.$CIRCLE_BUILD_NUM
-          docker build -t <docker image name> .
-          docker login <docker registry> -u $DOCKER_USER -p $DOCKER_PASS
-          docker push <docker image name>
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run: npm test
+
+  # build the image and push it to docker hub
+  dockerize:
+    machine: true
+    working_directory: ~/api
+    environment:
+      IMAGE_NAME: feredean/node-api-starter
+    steps:
+      - restore_cache:
+          keys:
+            - v1-build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Push image to docker registry
+          command: |
+            docker build -t $IMAGE_NAME:$CIRCLE_SHA1 -t $IMAGE_NAME:latest .
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest
+            docker push $IMAGE_NAME:$CIRCLE_SHA1
+
+  # pull the image from docker hub and deploy it to the k8s cluster
+  deploy:
+    docker:
+      - image: feredean/circleci-kops:0.1.0
+    environment:
+      IMAGE_NAME: feredean/node-api-starter
+      KOPS_STATE_STORE: s3://k8s-explabs-io-state-store
+    steps:
+      - run:
+          name: Deploy to k8s cluster
+          command: |
+            # Ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set in the project's env vars
+            kops export kubecfg --name k8s.explabs.io
+            kubectl set image deploy/node-api-starter node-api-starter=$IMAGE_NAME:$CIRCLE_SHA1
 
 workflows:
   version: 2
-  test_and_deploy:
+  build_test_deploy:
     jobs:
-      - test
+      - build
+      - test:
+          requires:
+            - build
+      - dockerize:
+          requires:
+            - build
+            - test
+          filters:
+            # only deploy when a commit hits the master branch
+            branches:
+              only: master
       - deploy:
           requires:
-            - test
+            - dockerize
           filters:
             branches:
               only: master

@@ -1,5 +1,7 @@
 # TypeScript Node API StarterPack - WORK IN PROGRESS
 
+[![Dependency Status](https://david-dm.org/feredean/node-api-starter.svg)](https://david-dm.org/feredean/node-api-starter) [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=svg)](https://circleci.com/gh/feredean/node-api-starter)
+
 | Name | Description |
 | ------------------------ | --------------------------------------------------------------------------------------------- |
 | **.vscode**              | Contains VS Code specific settings                                                            |
@@ -18,7 +20,7 @@
 | .eslintrc                | Config settings for ESLint code style checking                                                |
 | .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm            |
 | jest.config.js           | Used to configure Jest running tests written in TypeScript                                    |
-| package.json             | File that contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)                          |
+| package.json             | File that contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)                        |
 | tsconfig.json            | Config settings for compiling server code written in TypeScript                               |
 
 ## Import path workaround
@@ -51,4 +53,9 @@ The approach chosen for this project is to:
 
 ## TypeScript Node Starter
 
-Heavily inspired from https://github.com/microsoft/TypeScript-Node-Starter. It's basically a stripped down version with some personal flavour mixed in.
+Heavily inspired from <https://github.com/microsoft/TypeScript-Node-Starter>. It's basically a stripped down version with some personal flavour mixed in.
+
+## CI Pipeline
+<!-- kubectl create secret generic node-starter --from-env-file=.env.prod -->
+<https://circleci.com/docs/2.0/local-cli/#validate-a-circleci-config>
+<!-- circleci local execute -->

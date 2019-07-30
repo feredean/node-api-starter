@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
             res.status(400).json({errors: [{ msg: "Account already exists." }]});
         } else {
             await user.save();
-            res.sendStatus(201);
+            res.status(201).json({ token: "" });
         }
     } catch (error) {
         next(error);

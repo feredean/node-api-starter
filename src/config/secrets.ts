@@ -4,8 +4,7 @@ import { PRODUCTION, NODE_ENV } from "config/settings";
 import fs from "fs";
 
 if (!fs.existsSync(".env")) {
-    logger.error("No .env file configured");
-    process.exit(1);
+    logger.info("No .env file found, looking for variables in environment.");
 }
 
 dotenv.config();

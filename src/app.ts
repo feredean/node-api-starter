@@ -9,6 +9,7 @@ mongoose.set("useCreateIndex", true);
 mongoose.connect(MONGO_URI, { useNewUrlParser: true })
     .catch((err): void => {
         logger.error("MongoDB connection error. Please make sure MongoDB is running. " + err);
+        process.exit(1);
     });
 
 const app = express();
