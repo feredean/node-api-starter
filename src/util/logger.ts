@@ -3,7 +3,7 @@ import { NODE_ENV, PRODUCTION, TEST } from "config/settings";
 
 const logLevel = (): string => {
     switch (NODE_ENV) {
-        case PRODUCTION: return "error";
+        case PRODUCTION: return "info";
         case TEST: return  "nologging";
         default: return "debug";
     }
