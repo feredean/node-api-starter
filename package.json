@@ -5,16 +5,15 @@
     "license": "MIT",
     "author": "Tiberiu Feredean",
     "scripts": {
-        "start": "npm run serve",
-        "serve": "node dist/server.js",
+        "start": "NODE_PATH=$STARTER_PATH node dist/server.js",
         "build": "npm run build-ts && npm run lint",
         "build-ts": "tsc",
+        "lint": "tsc --noEmit && eslint \"*/**/*.{js,ts}\" --quiet --fix",
         "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
         "watch-node": "NODE_PATH=$STARTER_PATH nodemon dist/server.js",
         "watch-ts": "tsc -w",
         "test": "jest --coverage --verbose",
-        "watch-test": "npm run test -- --watchAll",
-        "lint": "tsc --noEmit && eslint \"*/**/*.{js,ts}\" --quiet --fix"
+        "watch-test": "npm run test -- --watchAll"
     },
     "dependencies": {
         "bcrypt": "^3.0.6",
@@ -23,10 +22,11 @@
         "cors": "^2.8.5",
         "dotenv": "^8.0.0",
         "express": "^4.17.1",
-        "i": "^0.3.6",
+        "fbgraph": "^1.4.4",
         "lodash": "^4.17.15",
         "mongoose": "^5.6.7",
         "morgan": "^1.9.1",
+        "nodemailer": "^6.3.0",
         "passport": "^0.4.0",
         "passport-facebook": "^3.0.0",
         "passport-local": "^1.0.0",
