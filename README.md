@@ -50,10 +50,9 @@ There are two ways to go about handling requirements. You can either follow the 
 ## Fancy start
 
 - Install [Node Version Manager](https://github.com/nvm-sh/nvm#installation-and-update)
-- Configure nvm [Shell Integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) (highly recommend setting up zsh together with [oh my zsh](https://github.com/robbyrussell/oh-my-zsh)). Once you set it up it will automatically change the node version if the project has a `.nvmrc` file. 
+- Configure nvm [Shell Integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) (highly recommend setting up zsh together with [oh my zsh](https://github.com/robbyrussell/oh-my-zsh)). Once you set it up it will automatically change the node version if the project has a `.nvmrc` file.
 - Install [docker](https://docs.docker.com/install/)
 - Run MongoDB in a docker container `docker run --name mongo-dev -p 27017:27017 mongo:4.0`
-
 
 # Getting started
 
@@ -94,30 +93,30 @@ TBA
 # Project Structure
 
 | Name | Description |
-| ------------------------ | --------------------------------------------------------------------------------------------- |
-| **.circleci**            | Contains CircleCI settings for continuous deployment                                          |
-| **.vscode**              | Contains VS Code specific settings                                                            |
-| **dist**                 | Contains the distributable (or output) from your TypeScript build. This is the code you ship  |
-| **node_modules**         | Contains all your npm dependencies                                                            |
-| **src**                  | Contains your source code that will be compiled to the dist dir                               |
-| **src/api**              | Contains all the API versions each with it's own controllers for the configured routes        |
-| **src/config**           | Contains all the configuration needed to setup the API (express, routes and passport)         |
-| **src/models**           | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB  |
-| **src/types**            | Holds .d.ts files not found on DefinitelyTyped                                                |
-| **src**/server.ts        | Entry point to your express app                                                               |
-| **test**                 | Contains your tests. Separate from source because there is a different build process          |
-| **test**/tsconfig.json   | Config settings for compiling the tests                                                       |
-| .env                     | All the env variables needed to run the app. Gitignored, will be loaded by dotenv             |
-| .env.example             | All the env variables needed to run the app. An example list of the keys that must exist in .env files |
-| .env.prod                | All the env variables needed to run the app in production. Gitignored, will be used in the deployment |
-| .eslintignore            | Config settings for paths to exclude from linting                                             |
-| .eslintrc                | Config settings for ESLint code style checking                                                |
-| .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm            |
-| deployment.yaml          | Contains kubernetes configuration for running the app on a cluster (auto-scalling included)   |
-| Dockerfile               | Used to build our docker image in the `dockerize` job in `.circleci/config.yml`               |
-| jest.config.js           | Used to configure Jest running tests written in TypeScript                                    |
-| package.json             | File that contains npm dependencies as well as build scripts                                  |
-| tsconfig.json            | Config settings for compiling server code written in TypeScript                               |
+| ------------------------ | -----------------------------------------------------------------------------------------------------------|
+| **.circleci**            | Contains CircleCI settings for continuous deployment                                                       |
+| **.vscode**              | Contains VS Code specific settings                                                                         |
+| **dist**                 | Contains the distributable (or output) from your TypeScript build. This is the code you ship               |
+| **node_modules**         | Contains all your npm dependencies                                                                         |
+| **src**                  | Contains your source code that will be compiled to the dist dir                                            |
+| **src/api**              | Contains all the API versions each with it's own controllers for the configured routes                     |
+| **src/config**           | Contains all the configuration needed to setup the API (express, routes and passport)                      |
+| **src/models**           | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB               |
+| **src/types**            | Holds .d.ts files not found on DefinitelyTyped                                                             |
+| **src**/server.ts        | Entry point to your express app                                                                            |
+| **test**                 | Contains your tests. Separate from source because there is a different build process                       |
+| **test**/tsconfig.json   | Config settings for compiling the tests                                                                    |
+| .env                     | All the env variables needed to run the app. Gitignored, will be loaded by dotenv                          |
+| .env.example             | All the env variables needed to run the app. An example list of the keys that must exist in .env files     |
+| .env.prod                | All the env variables needed to run the app in production. Gitignored, will be used in the deployment      |
+| .eslintignore            | Config settings for paths to exclude from linting                                                          |
+| .eslintrc                | Config settings for ESLint code style checking                                                             |
+| .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm                         |
+| deployment.yaml          | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)                 |
+| Dockerfile               | Used to build our docker image in the `dockerize` job in `.circleci/config.yml`                            |
+| jest.config.js           | Used to configure Jest running tests written in TypeScript                                                 |
+| package.json             | File that contains npm dependencies as well as build scripts                                               |
+| tsconfig.json            | Config settings for compiling server code written in TypeScript                                            |
 
 # Build scripts
 
@@ -126,16 +125,17 @@ TBA
 Any build that runs the compiled `dist/server.js` must have the NODE_PATH set up. This is required for the [import path workaround](#import-path-workaround).
 
 | Npm Script | Description |
-| ------------------------- | ------------------------------------------------------------------------------------------------- |
-| `start`                   | Runs node on `dist/server.js` which is the apps entry point                                       |
-| `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                |
-| `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                               |
-| `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                           |
-| `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task |
-| `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed               |
-| `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                        |
-| `watch-test`              | Runs tests in watch mode                                                                          |
-| `lint`                    | Runs ESLint on project files                                                                      |
+| ------------------------- | -----------------------------------------------------------------------------------------------------------------|
+| `start`                   | Runs node on `dist/server.js` which is the apps entry point                                                      |
+| `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                               |
+| `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                                              |
+| `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                          |
+| `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task  |
+| `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                              |
+| `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                       |
+| `watch-test`              | Runs tests in watch mode                                                                                         |
+| `lint`                    | Runs ESLint on project files                                                                                     |
+| `check-deps`              | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version   |
 
 # Import path workaround
 
@@ -204,9 +204,10 @@ In the `jest.config.js` we will add `setupFilesAfterEnv: ["./test/setup.ts"]` wh
 To run the tests simply use `npm test`. If you want to use jest `watch mode` use `npm run watch-test`.
 
 ## Linting
-This year [Palantir has announced](https://medium.com/palantir/tslint-in-2019-1a144c2317a9) the deprecation of TSLint. 
 
-> In order to avoid bifurcating the linting tool space for TypeScript, we therefore plan to deprecate TSLint and focus our efforts instead on improving ESLint’s TypeScript support. 
+This year [Palantir has announced](https://medium.com/palantir/tslint-in-2019-1a144c2317a9) the deprecation of TSLint.
+
+> In order to avoid bifurcating the linting tool space for TypeScript, we therefore plan to deprecate TSLint and focus our efforts instead on improving ESLint’s TypeScript support.
 
 This project is using `ESLint` with `typescript-eslint/recommended` settings.
 
@@ -238,18 +239,20 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | validator                       | A library of string validators and sanitizers.                           |
 | winston                         | Logging library                                                          |
 
-## `developemnt`
+## `development`
 
-| Package                         | Description                                                            |
-| ------------------------------- | ---------------------------------------------------------------------- |
-| @types                          | Dependencies in this folder are `.d.ts` files used to provide types    |
-| concurrently                    | Utility that manages multiple concurrent tasks. Used with npm scripts  |
-| eslint                          | Linter for JavaScript and TypeScript files                             |
-| jest                            | Testing library for JavaScript                                         |
-| nodemon                         | Utility that automatically restarts node process on code changes       |
-| supertest                       | HTTP assertion library                                                 |
-| ts-jest                         | A preprocessor with sourcemap support to help use TypeScript with Jest |
-| typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity   |
+| Package                         | Description                                                                            |
+| ------------------------------- | ---------------------------------------------------------------------------------------|
+| @types                          | Dependencies in this folder are `.d.ts` files used to provide types                    |
+| concurrently                    | Utility that manages multiple concurrent tasks. Used with npm scripts                  |
+| eslint                          | Linter for JavaScript and TypeScript files                                             |
+| jest                            | Testing library for JavaScript                                                         |
+| node-mocks-http                 | Used for mockups of the request and response objects                                   |
+| nodemon                         | Utility that automatically restarts node process on code changes                       |
+| npm-check-updates               | Upgrades package.json dependencies to the latest versions, ignoring specified version  |
+| supertest                       | HTTP assertion library                                                                 |
+| ts-jest                         | A preprocessor with sourcemap support to help use TypeScript with Jest                 |
+| typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity                   |
 
 To install or update these dependencies you can use `npm install` or `npm update`.
 
@@ -263,12 +266,12 @@ TBA
 <!-- circleci local execute -->
 <!-- k rollout undo deployment node-api-starter -->
 
-
 # Related projects
 
 I highly recommend taking a look at both Sahat's [Hackathon Starter](https://github.com/sahat/hackathon-starter) and Microsoft's [TypeScript Node Starter](https://github.com/microsoft/TypeScript-Node-Starter). Both have been great help and a source of inspiration for setting up this project.
 
 # License
+
 The MIT License (MIT)
 
 Copyright (c) 2019 Tiberiu Feredean

@@ -57,7 +57,7 @@ passport.use(new FacebookStrategy({
     try {
         if (req.user) {
             let user = await User.findOne({ facebook: profile.id });
-            if (user) throw new Error("There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account.");
+            if (user) return done(undefined, false, { message: "There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account." });
             user = await User.findById(req.user.id);
             user.facebook = profile.id;
             user.tokens.push({ kind: "facebook", accessToken });
@@ -70,7 +70,7 @@ passport.use(new FacebookStrategy({
             let user = await User.findOne({ facebook: profile.id });
             if (user) return done(undefined, user);
             user = await User.findOne({ email: profile._json.email });
-            if (user) throw new Error("There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings.");
+            if (user) return done(undefined, false, { message: "There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings." });
             const newUser: UserDocument = new User();
             newUser.email = profile._json.email;
             newUser.facebook = profile.id;
