@@ -4,6 +4,10 @@
     "description": "REST API scaffolding",
     "license": "MIT",
     "author": "Tiberiu Feredean",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/feredean/node-api-starter"
+    },
     "scripts": {
         "start": "NODE_PATH=$STARTER_PATH node dist/server.js",
         "build": "npm run build-ts && npm run lint",
@@ -13,7 +17,8 @@
         "watch-node": "NODE_PATH=$STARTER_PATH nodemon dist/server.js",
         "watch-ts": "tsc -w",
         "test": "jest --coverage --verbose",
-        "watch-test": "npm run test -- --watchAll"
+        "watch-test": "npm run test -- --watchAll",
+        "check-deps": "npm audit && ncu"
     },
     "dependencies": {
         "bcrypt": "^3.0.6",
@@ -24,7 +29,7 @@
         "express": "^4.17.1",
         "fbgraph": "^1.4.4",
         "lodash": "^4.17.15",
-        "mongoose": "^5.6.7",
+        "mongoose": "^5.6.8",
         "morgan": "^1.9.1",
         "nodemailer": "^6.3.0",
         "passport": "^0.4.0",
@@ -35,13 +40,13 @@
     },
     "devDependencies": {
         "@types/bcrypt": "^3.0.0",
-        "@types/compression": "0.0.36",
+        "@types/compression": "1.0.0",
         "@types/cors": "^2.8.5",
         "@types/dotenv": "^6.1.1",
         "@types/express": "^4.17.0",
-        "@types/jest": "^24.0.16",
+        "@types/jest": "^24.0.17",
         "@types/lodash": "^4.14.136",
-        "@types/mongoose": "^5.5.11",
+        "@types/mongoose": "^5.5.12",
         "@types/morgan": "^1.7.36",
         "@types/passport": "^1.0.0",
         "@types/passport-facebook": "^2.1.9",
@@ -53,7 +58,9 @@
         "concurrently": "^4.1.1",
         "eslint": "^6.1.0",
         "jest": "^24.8.0",
+        "node-mocks-http": "^1.7.6",
         "nodemon": "^1.19.1",
+        "npm-check-updates": "^3.1.20",
         "supertest": "^4.0.2",
         "ts-jest": "^24.0.2",
         "typescript": "^3.5.3"

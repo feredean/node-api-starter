@@ -1,8 +1,9 @@
-import express, {NextFunction, Request, Response} from "express";
+import express from "express";
 import mongoose from "mongoose";
 import setupExpress from "config/express";
 import setupRoutesV1 from "config/routes/v1";
 import { MONGO_URI } from "config/secrets";
+import * as mw from "middleware";
 import logger from "util/logger";
 
 mongoose.set("useCreateIndex", true);
@@ -17,14 +18,7 @@ const app = express();
 setupExpress(app);
 setupRoutesV1(app);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((error: Error, _req: Request, res: Response, _next: NextFunction): void => {
-    logger.error(error.stack);
-    res.status(500).json({errors: ["Server Error"]});
-});
-
-app.route("/*").get((_req, res): void => {
-    res.sendStatus(404);
-});
+app.use(mw.handleMissing);
+app.use(mw.handleErrors);
 
 export default app;
