@@ -1,39 +1,51 @@
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import UUID from "uuid/v4";
+import { USER_ROLES } from "config/settings";
 
-
+export interface Profile {
+    name: string;
+    gender: string;
+    location: string;
+    website: string;
+    picture: string;
+}
 export interface AuthToken {
     accessToken: string;
     kind: string;
 }
-
+export interface UserAPIFormat {
+    id: string;
+    email: string;
+    role: string;
+    profile?: Profile;
+    avatar: string;
+}
 export type UserDocument = mongoose.Document & {
+    id: string;
     email: string;
     password: string;
     passwordResetToken: string;
     passwordResetExpires: Date;
+    role: string;
+    profile: Profile;
 
     facebook: string;
     tokens: AuthToken[];
 
-    profile: {
-        name: string;
-        gender: string;
-        location: string;
-        website: string;
-        picture: string;
-    };
-
     authenticate: (candidatePassword: string) => Promise<boolean>;
     gravatar: (size: number) => string;
+    format: () => UserAPIFormat;
 };
 
 const userSchema = new mongoose.Schema({
+    id: { type: String, default: UUID, unique: true },
     email: { type: String, unique: true },
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    role: { type: String, default: "user", enum: USER_ROLES },
 
     facebook: String,
     tokens: Array,
@@ -69,6 +81,23 @@ userSchema.methods = {
         }
         const md5 = crypto.createHash("md5").update(this.email).digest("hex");
         return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
+    },
+    format: function(): UserAPIFormat {
+        const result = {
+            id: this.id,
+            email: this.email,
+            role: this.role,
+            avatar: this.gravatar(),
+            profile: {
+                name: this.name,
+                gender: this.gender,
+                location: this.location,
+                website: this.website,
+                picture: this.picture
+            }
+        };
+
+        return result;
     }
 };
 

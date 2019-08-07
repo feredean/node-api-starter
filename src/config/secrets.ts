@@ -20,6 +20,9 @@ const secrets = [
 
     "FACEBOOK_ID",
     "FACEBOOK_SECRET",
+
+    "SENDGRID_USER",
+    "SENDGRID_PASSWORD",
 ];
 
 for (const secret of secrets) {
@@ -42,3 +45,5 @@ export const SESSION_SECRET = process.env["SESSION_SECRET"];
 export const MONGO_URI = mongoURI;
 export const FACEBOOK_ID = process.env["FACEBOOK_ID"];
 export const FACEBOOK_SECRET = process.env["FACEBOOK_SECRET"];
+export const SENDGRID_USER = process.env["SENDGRID_USER"];
+export const SENDGRID_PASSWORD = process.env["SENDGRID_PASSWORD"];
