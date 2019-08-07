@@ -1,11 +1,11 @@
 import cors from "cors";
 import morgan from "morgan";
-import passport from "passport";
 import compression from "compression";
 import bodyParser from "body-parser";
 import { Express } from "express";
 
 import logger from "util/logger";
+import passport from "config/passport";
 import { CORS, APP_PORT } from "config/settings";
 
 export default (app: Express): void => {
@@ -22,8 +22,9 @@ export default (app: Express): void => {
         }
     };
 
+    passport(app);
+    
     app.use(cors(corsOptions));
-    app.use(passport.initialize());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(compression());

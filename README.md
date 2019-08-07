@@ -229,6 +229,7 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | dotenv                          | Loads environment variables from .env file.                              |
 | express                         | Node.js web framework.                                                   |
 | fbgraph                         | Facebook Graph API library.                                              |
+| jsonwebtoken                    | An implementation of JSON Web Tokens.                                    |
 | lodash                          | General utility library.                                                 |
 | mongoose                        | MongoDB ODM.                                                             |
 | morgan                          | HTTP request logger middleware                                           |
@@ -236,6 +237,7 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | passport                        | Simple and elegant authentication library for node.js                    |
 | passport-facebook               | Sign-in with Facebook plugin.                                            |
 | passport-local                  | Sign-in with Username and Password plugin.                               |
+| uuid                            | Simple, fast generation of RFC4122 UUIDS.                                |
 | validator                       | A library of string validators and sanitizers.                           |
 | winston                         | Logging library                                                          |
 
@@ -247,7 +249,6 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | concurrently                    | Utility that manages multiple concurrent tasks. Used with npm scripts                  |
 | eslint                          | Linter for JavaScript and TypeScript files                                             |
 | jest                            | Testing library for JavaScript                                                         |
-| node-mocks-http                 | Used for mockups of the request and response objects                                   |
 | nodemon                         | Utility that automatically restarts node process on code changes                       |
 | npm-check-updates               | Upgrades package.json dependencies to the latest versions, ignoring specified version  |
 | supertest                       | HTTP assertion library                                                                 |
