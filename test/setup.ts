@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 process.env.MONGO_DATABASE = "starter-test";
+process.env.SESSION_SECRET = "super_secret_key";
+
 export const initMongo = async (): Promise<void> => {
     async function clearDB(): Promise<void> {
         await Promise.all(

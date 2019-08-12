@@ -21,7 +21,6 @@ const signToken = (user: UserDocument): string => jwt.sign({
     subject: user.id
 });
 
-// Sliding session - also used to refresh jwt payload (such as role change)
 export const refresh = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const user = await User.findOne({ id: req.user.sub });
@@ -150,6 +149,42 @@ export const reset = async (req: Request, res: Response, next: NextFunction): Pr
         await transporter.sendMail(mailOptions);
 
         res.sendStatus(201);
+    } catch (error) {
+        next(error);
+    }
+};
+export const profile = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+    try {
+        const user = await User.findOne({ id: req.user.sub });
+        user.profile.name = req.body.name;
+        user.profile.gender = req.body.gender;
+        user.profile.location = req.body.location;
+        user.profile.website = req.body.website;
+        await user.save();
+        res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
+};
+export const password = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+    try {
+        const validationErrors = [];
+        if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push("Password must be at least 8 characters long");
+        if (req.body.password !== req.body.confirm) validationErrors.push("Passwords do not match");
+        if (validationErrors.length) return res.status(422).json(errorFormat(...validationErrors));
+        const user = await User.findOne({ id: req.user.sub });
+        user.password = req.body.password;
+        await user.save();
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+};
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+    try {
+        await User.deleteOne({ id: req.user.sub });
+        res.sendStatus(200);
     } catch (error) {
         next(error);
     }
