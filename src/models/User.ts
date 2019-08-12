@@ -5,11 +5,11 @@ import UUID from "uuid/v4";
 import { USER_ROLES } from "config/settings";
 
 export interface Profile {
-    name: string;
-    gender: string;
-    location: string;
-    website: string;
-    picture: string;
+    name?: string;
+    gender?: string;
+    location?: string;
+    website?: string;
+    picture?: string;
 }
 export interface AuthToken {
     accessToken: string;

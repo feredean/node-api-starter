@@ -1,4 +1,3 @@
-import _ from "lodash";
 import passport from "passport";
 import passportLocal from "passport-local";
 import passportFacebook, { Profile } from "passport-facebook";
@@ -18,7 +17,7 @@ passport.use(new LocalStrategy({
     passwordField: "password"
 }, async (email, password, done): Promise<void> => {
     try {
-        const user: UserDocument = await User.findOne({ email: email.toLowerCase() });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) return done(null, false, {message: "Email not registered"});
         if (!await user.authenticate(password)) return done(null, false, { message: "Invalid credentials" });
         done(null, user);
