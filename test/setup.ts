@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
+
+process.env.FACEBOOK_ID = "not_used";
+process.env.FACEBOOK_SECRET = "not_used";
 process.env.MONGO_DATABASE = "starter-test";
+process.env.MONGO_HOST = "localhost";
+process.env.MONGO_PORT = "27017";
+process.env.MONGO_USERNAME = "not_used";
+process.env.MONGO_PASSWORD = "not_used";
+process.env.SENDGRID_PASSWORD = "not_used";
+process.env.SENDGRID_USER = "not_used";
 process.env.SESSION_SECRET = "super_secret_key";
 
 export const initMongo = async (): Promise<void> => {
