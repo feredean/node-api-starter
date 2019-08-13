@@ -20,7 +20,10 @@ This project has two purposes:
   - [Quick start](#quick-start)
   - [Fancy start](#fancy-start)
 - [Getting started](#getting-started)
-- [Deploying the app](#deploying-the-app)
+- [Deployment](#deployment)
+  - [Prerequisites](#prerequisites)
+  - [Deploying to kubernetes](#deploying-to-kubernetes)
+  - [CircleCI](#circleci)
 - [Project Structure](#project-structure)
 - [Build scripts](#build-scripts)
 - [Import path workaround](#import-path-workaround)
@@ -33,7 +36,6 @@ This project has two purposes:
 - [Dependencies](#dependencies)
   - [`production`](#production)
   - [`development`](#development)
-- [Continuous deployment](#continuous-deployment)
 - [Related projects](#related-projects)
 - [License](#license)
 
@@ -85,10 +87,95 @@ To build the project in VS Code press `cmd + shift + b`. You can also run tasks 
 
 Finally, navigate to `http://localhost:9100` and you now have access to your API
 
-# Deploying the app
+# Deployment
 
-TBA
-<!-- ## Prerequisites -->
+The example in this project is built around the existence of a kubernetes cluster. You can easily change to your infrastructure of choice by changing the deploy step in `.circleci/config.yml` to pull the docker image wherever you need it.
+
+```yaml
+  # pull the image from docker hub and deploy it to the k8s cluster
+  deploy:
+    docker:
+      - image: feredean/circleci-kops:0.1.0
+    environment:
+      IMAGE_NAME: feredean/node-api-starter
+      KOPS_STATE_STORE: s3://k8s-explabs-io-state-store
+    steps:
+      - run:
+          name: Deploy to k8s cluster
+          command: |
+            # Ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set in the project's env vars
+            kops export kubecfg --name k8s.explabs.io
+            kubectl set image deploy/node-api-starter node-api-starter=$IMAGE_NAME:$CIRCLE_SHA1
+```
+
+## Prerequisites
+
+### Kubernetes
+
+Depending on your cloud provider of choice you can fairly quickly set up a managed, production-ready environment for deploying containerized applications.
+
+- Google's [GKE](https://cloud.google.com/kubernetes-engine/)
+- Amazon's [EKS](https://aws.amazon.com/eks/)
+- Microsoft's [AKS](https://azure.microsoft.com/en-in/services/kubernetes-service/)
+
+This project is deployed on a cluster set up with [kops](https://github.com/kubernetes/kops) on [aws spot instances](https://aws.amazon.com/ec2/spot/). If there is interest I plan on going more in depth on this subject and provide a walkthrough.
+
+### MongoDB
+
+You can deploy MongoDB in a kubernetes cluster using [KubeDB](https://kubedb.com/). For more information about what the CRD supports visit [the documentation](https://kubedb.com/docs/0.12.0/guides/mongodb/).
+
+## Deploying to Kubernetes
+
+First you need to have an `.env.prod` file that has all the secrets that will be used in production. We then create a `node-starter` secret that we will later load in our API deployment.
+
+```zsh
+kubectl create secret generic node-starter --from-env-file=.env.prod
+```
+
+Notice that in `deployment.yaml` we load our environment from the node-starter secret
+
+```yaml
+envFrom:
+- secretRef:
+    name: node-starter
+```
+
+Now we need to create the kubernetes deployment, service and optionally our Horizontal Pod Autoscaler that can later be paired with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler). To do this simply run the following:
+
+```zsh
+kubectl create -f deployment.yaml
+```
+
+Everything is broken, somehow a deadly bug has managed to make its way past our test suite and is now wrecking havoc in production! What do we do?! Easy!
+
+```zsh
+kubectl rollout undo deployment node-api-starter
+```
+
+This will instantly roll back the deployment to the previous one. 
+
+## CircleCI
+
+To achieve continuous deployment I have chosen CircleCI. Recently Github has announced their new feature [actions](https://github.com/features/actions) which is currently still in beta. The GA release will still [take a while](https://twitter.com/natfriedman/status/1159514205940117504). When it's out I'm considering switching to it.
+
+Now, to deploy on CircleCI:
+
+1. Go to [CircleCI](https://circleci.com/) and create an account
+1. Link your project
+1. Add the needed environment variables to run the test
+
+    ```zsh
+    # Used to connect to the kubernetes cluster
+    AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY
+    # Used for publishing the image
+    DOCKERHUB_PASS
+    DOCKERHUB_USERNAME
+    ```
+
+1. Make master branch a protected branch require `ci/circleci: test` check before merging from feature branches. Once a PR is merged into master CircleCI will automatically build, test and deploy the new version of the API.
+
+Congratulations! You how have an API set up and ready to embrace the CD workflow!
 
 # Project Structure
 
@@ -256,16 +343,6 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity                   |
 
 To install or update these dependencies you can use `npm install` or `npm update`.
-
-# Continuous deployment
-
-TBA
-
-<!-- To impement continous deployment first we need to  -->
-<!-- kubectl create secret generic node-starter --from-env-file=.env.prod -->
-<!-- <https://circleci.com/docs/2.0/local-cli/#validate-a-circleci-config> -->
-<!-- circleci local execute -->
-<!-- k rollout undo deployment node-api-starter -->
 
 # Related projects
 
