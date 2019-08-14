@@ -9,3 +9,5 @@ export const CORS = [
 ];
 export const UNSUBSCRIBE_LANDING = "";
 export const USER_ROLES = ["user", "admin", "owner"];
+export const S3_CONTENT_BUCKET = "starter-content";
+export const S3_CONTENT_LINK_EXPIRATION = 15 * 60; // 15 min

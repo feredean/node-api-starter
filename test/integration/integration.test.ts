@@ -1,3 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const mockedPutObject = jest.fn();
+const mockedGetSignedUrl = jest.fn();
+jest.mock("aws-sdk/clients/s3", (): any => {
+    return class S3 {
+        public constructor() {}
+        public putObject(params: any): any {
+            mockedPutObject(params);
+            return {
+                promise: async (): Promise<void> => {}
+            };
+        }
+        public getSignedUrl(operation: string, params: any): string {
+            mockedGetSignedUrl(operation, params);
+            return "https://dummy.url.com";
+        }
+    };
+});
+
 jest.mock("nodemailer");
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
@@ -5,8 +24,11 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 
 import { initMongo, disconnectMongo } from "setup";
+import { REGISTER_VALID, signToken, registerValidUser, RegisterUserOptions} from "helpers";
 import { SESSION_SECRET } from "config/secrets";
 import { User } from "models/User";
+
+const GENERIC_UPLOAD_USER_ID = "GENERIC_UPLOAD_USER_ID";
 
 interface JWTPayload {
     email: string;
@@ -14,59 +36,97 @@ interface JWTPayload {
     sub: string;
     exp: number;
 }
-interface JWTData {
-    id: string;
-    email: string;
-    role: string;
-    exp: string;
-}
-
-const REGISTER_VALID = {
-    email: "valid@email.com",
-    password: "valid_password"
-};
-
-const signToken = (data: JWTData): string => jwt.sign({
-    email: data.email,
-    role: data.role
-}, SESSION_SECRET, { 
-    expiresIn: data.exp,
-    subject: data.id
-});
-
-const registerValidUser = async (role: string = "user", jwtExpiration: string = "1s"): Promise<string> => {
-    const user = {
-        email: REGISTER_VALID.email,
-        password: REGISTER_VALID.password,
-        id: "b27e8455-eac8-47c9-babc-8a8a6be5e4ae",
-        role: role
-    };
-
-    await User.create(user);
-
-    return signToken({
-        id: user.id,
-        email: user.email,
-        role: role,
-        exp: jwtExpiration
-    });
-};
 
 import app from "app";
 
 describe("API V1", (): void => {
-    describe("/v1/account", (): void => {
+
+    describe("/hello", (): void => {
+        describe("GET /", (): void => {
+            it("should return 200 OK", async (): Promise<void>  => {
+                await request(app).get("/v1/hello")
+                    .expect(200);
+            });
+        });
+    });
+
+    describe("/upload", (): void => {
+        const adminOpts: RegisterUserOptions = {
+            id: GENERIC_UPLOAD_USER_ID,
+            role: "admin",
+            randomize: true,
+        };
+
+        const userOpts: RegisterUserOptions = {
+            id: GENERIC_UPLOAD_USER_ID,
+            randomize: true,
+        };
+
+        describe("POST /", (): void => {
+            beforeEach(async (): Promise<void> => {
+                mockedPutObject.mockClear();
+                mockedGetSignedUrl.mockClear();
+                await initMongo();
+            });
+
+            afterAll(async(): Promise<void> => disconnectMongo());
+
+            it("should return 201, the document added to storage and call s3.putObject, s3.getSignedUrl - one file", async (): Promise<void> => {
+                const token = await registerValidUser(adminOpts);
+                const { body } = await request(app)
+                    .post("/v1/upload")
+                    .set("authorization", `Bearer ${token}`)
+                    .attach("file", "test/integration/files/sample-white.png")
+                    .expect(201);
+
+                expect(body).toMatchSnapshot();
+                expect(mockedPutObject).toHaveBeenCalled();
+                expect(mockedGetSignedUrl).toHaveBeenCalled();
+            });
+
+            it("should return 201, the documents added to storage and call s3.putObject, s3.getSignedUrl twice - two files", async (): Promise<void> => {
+                const token = await registerValidUser(adminOpts);
+                const { body } = await request(app)
+                    .post("/v1/upload")
+                    .set("authorization", `Bearer ${token}`)
+                    .attach("file", "test/integration/files/sample-white.png")
+                    .attach("file", "test/integration/files/sample-black.png")
+                    .expect(201);
+                
+                expect(body).toMatchSnapshot();
+                expect(mockedPutObject).toHaveBeenCalledTimes(2);
+                expect(mockedGetSignedUrl).toHaveBeenCalledTimes(2);
+            });
+
+            it("should return 401 and not call s3.putObject, s3.getSignedUrl", async (): Promise<void> => {
+                const token = await registerValidUser(userOpts);
+                await request(app)
+                    .post("/v1/upload")
+                    .set("authorization", `Bearer ${token}`)
+                    .attach("file", "test/integration/files/sample-white.png")
+                    .attach("file", "test/integration/files/sample-black.png")
+                    .expect(403);
+                expect(mockedPutObject).toHaveBeenCalledTimes(0);
+                expect(mockedGetSignedUrl).toHaveBeenCalledTimes(0);
+            });
+        });
+    });
+
+    describe("/account", (): void => {
+        const userOpts: RegisterUserOptions = {};
+        const adminOpts: RegisterUserOptions = { role: "admin" };
         
         describe("GET /", (): void => {
+
             beforeEach(async (): Promise<void> => {
                 await initMongo();
-                await registerValidUser("admin");
+                await registerValidUser(adminOpts);
             });
             afterAll(async (): Promise<void> => disconnectMongo());
 
-            it("returns a list of users", async (): Promise<void> => {
+            it("should return a list of users", async (): Promise<void> => {
                 const user = await User.findOne({});
-                await request(app)
+                const { body } = await request(app)
                     .get("/v1/account/")
                     .set("authorization", `Bearer ${signToken({
                         email: user.email,
@@ -74,17 +134,8 @@ describe("API V1", (): void => {
                         role: user.role,
                         exp: "1s"
                     })}`)
-                    .expect(200, {
-                        Data: [
-                            {
-                                id: user.id,
-                                email: user.email,
-                                role: user.role,
-                                avatar: "https://gravatar.com/avatar/cb7529c9a7c3297760ec76e41bf77d0a?s=200&d=retro",
-                                profile: {}
-                            }
-                        ]
-                    });
+                    .expect(200);
+                expect(body).toMatchSnapshot();
             });
         });
 
@@ -93,7 +144,7 @@ describe("API V1", (): void => {
             afterAll(async (): Promise<void> => disconnectMongo());
 
             it("should return a fresher JWT", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 const payload = await jwt.verify(token, SESSION_SECRET) as JWTPayload;
                 const expiringToken = signToken({
                     id: payload.sub,
@@ -111,7 +162,7 @@ describe("API V1", (): void => {
             });
 
             it("should return 401 - token is valid but the user does not exist", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 await User.deleteMany({});
                 const refresh = await request(app)
                     .get("/v1/account/jwt/refresh")
@@ -141,33 +192,20 @@ describe("API V1", (): void => {
             });
         
             it("should return status 422 - invalid email and password", async (): Promise<void> => {
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/register")
                     .send(REGISTER_INVALID_EMAIL_PASSWORD)
-                    .expect(422, {
-                        errors: [
-                            {
-                                msg: "Please enter a valid email address"
-                            },
-                            {
-                                msg: "Password must be at least 8 characters long"
-                            }
-                        ]
-                    });
+                    .expect(422);
+                expect(body).toMatchSnapshot();
             });
         
             it("should return status 422 - duplicate account", async (): Promise<void> => {
                 await request(app).post("/v1/account/register").send(REGISTER_VALID);
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/register")
                     .send(REGISTER_VALID)
-                    .expect(422, {
-                        errors: [
-                            {
-                                msg: "Account already exists"
-                            }
-                        ]
-                    });
+                    .expect(422);
+                expect(body).toMatchSnapshot();
             });
         
         });
@@ -177,7 +215,7 @@ describe("API V1", (): void => {
             afterAll(async (): Promise<void> => disconnectMongo());
             
             it("should return status 200 and the user's JWT - valid login", async (): Promise<void> => {
-                await registerValidUser();
+                await registerValidUser(userOpts);
                 const response = await request(app)
                     .post("/v1/account/login")
                     .send(REGISTER_VALID);
@@ -187,35 +225,32 @@ describe("API V1", (): void => {
             });
 
             it("should return status 403 - email not registered", async (): Promise<void> => {
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/login")
                     .send(REGISTER_VALID)
-                    .expect(403, {
-                        errors: [{ msg: "Email not registered" }]
-                    });
+                    .expect(403);
+                expect(body).toMatchSnapshot();                    
             });
 
             it("should return status 403 - invalid credentials", async (): Promise<void> => {
-                await registerValidUser();
-                await request(app)
+                await registerValidUser(userOpts);
+                const { body } = await request(app)
                     .post("/v1/account/login")
                     .send({
                         email: REGISTER_VALID.email,
                         password: "wrong_password"
                     })
-                    .expect(403, {
-                        errors: [{ msg: "Invalid credentials" }]
-                    });
+                    .expect(403);
+                expect(body).toMatchSnapshot();   
             });
 
             it("should return status 403 - no payload", async (): Promise<void> => {
-                await registerValidUser();
-                await request(app)
+                await registerValidUser(userOpts);
+                const { body } = await request(app)
                     .post("/v1/account/login")
                     .send({})
-                    .expect(403, {
-                        errors: [{ msg: "Invalid credentials" }]
-                    });
+                    .expect(403);
+                expect(body).toMatchSnapshot();   
             });
 
         });
@@ -227,7 +262,7 @@ describe("API V1", (): void => {
                 (nodemailer.createTransport as jest.Mock).mockReturnValue({"sendMail": sendMailMock});
 
                 await initMongo();
-                await registerValidUser();
+                await registerValidUser(userOpts);
             });
             afterAll(async (): Promise<void> => disconnectMongo());
             
@@ -243,24 +278,22 @@ describe("API V1", (): void => {
             });
 
             it("should return 422, does not set a password reset token or send an email - no data", async (): Promise<void> => {
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/forgot")
                     .send({})
-                    .expect(422, {
-                        errors: [{ msg: "Invalid data" }]
-                    });
+                    .expect(422);
+                expect(body).toMatchSnapshot();
                 const user = await User.findOne({});
                 expect(user.passwordResetToken).toBeUndefined();
                 expect(sendMailMock).toBeCalledTimes(0);
             });
 
             it("should return 404, does not set a password reset token or send an email - email not registered", async (): Promise<void> => {
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/forgot")
                     .send({ email: "not@registered.email" })
-                    .expect(404, {
-                        errors: [{ msg: "Email not found" }]
-                    });
+                    .expect(404);
+                expect(body).toMatchSnapshot();
                 const user = await User.findOne({});
                 expect(user.passwordResetToken).toBeUndefined();
                 expect(sendMailMock).toBeCalledTimes(0);
@@ -303,16 +336,11 @@ describe("API V1", (): void => {
             });
 
             it("should return 422 - password mismatch, password too short and invalid token", async(): Promise<void> => {
-                await request(app)
+                const { body } = await request(app)
                     .post("/v1/account/reset/invalid_token")
                     .send(RESET_PASSWORD_INVALID)
-                    .expect(422, {
-                        errors: [
-                            { msg: "Password must be at least 8 characters long" },
-                            { msg: "Passwords do not match" },
-                            { msg: "Invalid token" }
-                        ]
-                    });
+                    .expect(422);
+                expect(body).toMatchSnapshot();
                 expect(sendMailMock).toBeCalledTimes(0);
             });
 
@@ -320,12 +348,11 @@ describe("API V1", (): void => {
                 const user = await User.findOne({});
                 user.passwordResetExpires = new Date(Date.now() - 1000);
                 await user.save();
-                await request(app)
+                const { body } = await request(app)
                     .post(`/v1/account/reset/${user.passwordResetExpires}`)
                     .send(RESET_PASSWORD_VALID)
-                    .expect(422, {
-                        errors: [{ msg: "Invalid token" }]
-                    });
+                    .expect(422);
+                expect(body).toMatchSnapshot();
                 expect(sendMailMock).toBeCalledTimes(0);
             });
         });
@@ -343,7 +370,7 @@ describe("API V1", (): void => {
             };
 
             it("should return 200 and change the user's profile information", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/profile")
                     .set("authorization", `Bearer ${token}`)
@@ -357,7 +384,7 @@ describe("API V1", (): void => {
             });
 
             it("should return 401 - invalid authorization token", async (): Promise<void> => {
-                await registerValidUser();
+                await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/profile")
                     .send(PROFILE_DATA)
@@ -385,7 +412,7 @@ describe("API V1", (): void => {
             };
 
             it("should return 200 and change the user's password", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", `Bearer ${token}`)
@@ -396,7 +423,7 @@ describe("API V1", (): void => {
             });
 
             it("should return 401 - invalid authorization token", async (): Promise<void> => {
-                await registerValidUser();
+                await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", "Bearer invalid_token")
@@ -407,7 +434,7 @@ describe("API V1", (): void => {
             });
 
             it("should return 422 - invalid data", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", `Bearer ${token}`)
@@ -423,7 +450,7 @@ describe("API V1", (): void => {
             afterAll(async (): Promise<void> => disconnectMongo());
 
             it("should return 200 and delete the user", async (): Promise<void> => {
-                const token = await registerValidUser();
+                const token = await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/delete")
                     .set("authorization", `Bearer ${token}`)
@@ -432,7 +459,7 @@ describe("API V1", (): void => {
             });
 
             it("should return 401 - invalid authorization token", async (): Promise<void> => {
-                await registerValidUser();
+                await registerValidUser(userOpts);
                 await request(app)
                     .post("/v1/account/delete")
                     .expect(401);
