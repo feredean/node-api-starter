@@ -29,6 +29,7 @@ This project has two purposes:
 - [Import path workaround](#import-path-workaround)
 - [Debugging](#debugging)
 - [Testing](#testing)
+  - [Integration tests and jest](#integration-tests-and-jest)
   - [Configure Jest](#configure-jest)
   - [Running tests](#running-tests)
   - [Linting](#linting)
@@ -58,8 +59,6 @@ There are two ways to go about handling requirements. You can either follow the 
 
 # Getting started
 
-Clone the repository
-
 ```shell
 # Get the latest snapshot
 git clone --depth=1 https://github.com/feredean/node-api-starter.git <project_name>
@@ -73,10 +72,11 @@ npm install
 # Build the project
 npm run build
 
-# Copy the .env.example contents into the .env we use to store secrets
+# Copy the .env.example contents into the .env
 cat .env.example > .env
 
 # The STARTER_PATH env variable will be needed each time you run the API, be sure to persist it
+# If you decide to change the env variable name be sure to also change it in package.json build scripts
 export STARTER_PATH="$(pwd)/dist"
 
 # Run (development mode) the API on port 9100
@@ -126,13 +126,13 @@ You can deploy MongoDB in a kubernetes cluster using [KubeDB](https://kubedb.com
 
 ## Deploying to Kubernetes
 
-First you need to have an `.env.prod` file that has all the secrets that will be used in production. We then create a `node-starter` secret that we will later load in our API deployment.
+First you need to have an `.env.prod` file that has all the secrets that will be used in production. A `node-starter` secret needs to be created, it is used by the API deployment.
 
 ```zsh
 kubectl create secret generic node-starter --from-env-file=.env.prod
 ```
 
-Notice that in `deployment.yaml` we load our environment from the node-starter secret
+Notice that in `deployment.yaml` the environment is loaded from the node-starter secret
 
 ```yaml
 envFrom:
@@ -140,19 +140,19 @@ envFrom:
     name: node-starter
 ```
 
-Now we need to create the kubernetes deployment, service and optionally our Horizontal Pod Autoscaler that can later be paired with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler). To do this simply run the following:
+Finally you need to create the kubernetes deployment, service and optionally the horizontal pod autoscaler that can later be paired with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler). To do this simply run the following:
 
 ```zsh
 kubectl create -f deployment.yaml
 ```
 
-Everything is broken, somehow a deadly bug has managed to make its way past our test suite and is now wrecking havoc in production! What do we do?! Easy!
+If somehow a deadly bug has managed to make its way past the test suite and got deployed to production where it's wreaking havoc you need to run following command:
 
 ```zsh
-kubectl rollout undo deployment node-api-starter
+kubectl rollout undo deployment <your deployment name>
 ```
 
-This will instantly roll back the deployment to the previous one. 
+This will instantly roll back the deployment to the previous one.
 
 ## CircleCI
 
@@ -168,6 +168,7 @@ Now, to deploy on CircleCI:
     # Used to connect to the kubernetes cluster
     AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY
+
     # Used for publishing the image
     DOCKERHUB_PASS
     DOCKERHUB_USERNAME
@@ -190,6 +191,7 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 | **src/config**           | Contains all the configuration needed to setup the API (express, routes and passport)                      |
 | **src/models**           | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB               |
 | **src/types**            | Holds .d.ts files not found on DefinitelyTyped                                                             |
+| **src/utils**            | Contains API wide snippets (Logger, Error Formatter)                                                       |
 | **src**/server.ts        | Entry point to your express app                                                                            |
 | **test**                 | Contains your tests. Separate from source because there is a different build process                       |
 | **test**/tsconfig.json   | Config settings for compiling the tests                                                                    |
@@ -200,7 +202,7 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 | .eslintrc                | Config settings for ESLint code style checking                                                             |
 | .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm                         |
 | deployment.yaml          | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)                 |
-| Dockerfile               | Used to build our docker image in the `dockerize` job in `.circleci/config.yml`                            |
+| Dockerfile               | Used to build the docker image in the `dockerize` job in `.circleci/config.yml`                            |
 | jest.config.js           | Used to configure Jest running tests written in TypeScript                                                 |
 | package.json             | File that contains npm dependencies as well as build scripts                                               |
 | tsconfig.json            | Config settings for compiling server code written in TypeScript                                            |
@@ -223,6 +225,7 @@ Any build that runs the compiled `dist/server.js` must have the NODE_PATH set up
 | `watch-test`              | Runs tests in watch mode                                                                                         |
 | `lint`                    | Runs ESLint on project files                                                                                     |
 | `check-deps`              | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version   |
+|<img width=100/>||
 
 # Import path workaround
 
@@ -232,7 +235,7 @@ As a result the import paths will be copied over to the compiled js require path
 
 The approach chosen for this project is to:
 
-1. Add a `NODE_PATH` env variable that points to the `dist` folder. The path will be taken from an env variable in the system. For deployment we will later set the path in the Dockerfile after copying over the dist.
+1. Add a `NODE_PATH` env variable that points to the `dist` folder. The path will be taken from an env variable in the system. For deployment the path will be set in the Dockerfile after copying over the dist.
 
     ```json
         "watch-node": "NODE_PATH=$STARTER_PATH nodemon dist/server.js"
@@ -262,7 +265,7 @@ Debugging TypeScript requires source maps to be enabled in `tsconfig.json`:
 }
 ```
 
-In `.vscode` folder you can find the `launch.json` file. Here we configure VS Code to attach a debugger to the node process.
+In `.vscode` folder you can find the `launch.json` file. Here you can find the configuration that tells VS Code how to attach the debugger to the node process.
 
 ```json
 {
@@ -274,17 +277,30 @@ In `.vscode` folder you can find the `launch.json` file. Here we configure VS Co
 }
 ```
 
-Once this configuration is added make sure the app is running `npm run watch`, add breapoints, hit `F5`, select the `node dist/server.js` process (usually the first one) and you're ready to go!
+Once this configuration is added make sure the app is running `npm run watch`, add breakpoints, hit `F5`, select the `node dist/server.js` process (usually the first one) and you're ready to go!
 
 # Testing
 
 This project uses [Jest](https://facebook.github.io/jest/). When writing tests that interact with mongoose keep [this](https://mongoosejs.com/docs/jest.html) in mind.
 
+## Integration tests and jest
+
+When writing integration tests that use a shared resource (a database for example) you need to keep in mind that jest will test separate files in parallel which will lead to tests interfering with each other. Let's take an example. Lets say you want to test that `GET /v1/account/` will return a user you inserted just before you made the call. In another file you need to create a user in order to test something else. If you use the same database it is possible that for `GET /v1/account/` you will sometimes have one user (the one inserted in the test) some other times you will have multiple users (that got inserted in the database by other tests).
+
+In order to avoid this you have some options:
+
+- Keep all the tests that use a shared resource in the same file
+- Get [really creative](https://stackoverflow.com/a/52029468/1906892) with your setup
+- Use the option `--runInBand` to force run the tests to run serially in the current process
+- Set up the tests in such a way that each file uses a separate database
+
+After running into issue with all the other options I decided to move all the tests into one file.  
+
 ## Configure Jest
 
-We will need a new `test/tsconfig.json` file in order to properly load modules in our test suites.
+In order to properly load modules in the test suites a new `test/tsconfig.json` file is needed.
 
-In the `jest.config.js` we will add `setupFilesAfterEnv: ["./test/setup.ts"]` where we have a helper function that connects to the test database we will use in order to run the integration tests. The Typescript compilation to JS will happen in memory using the `test/tsconfig.json` file.
+In `jest.config.js` you can find `setupFilesAfterEnv: ["./test/setup.ts"]` where the test environment variables are set. In the setup file you can also find the `initMongo` and `disconnectMongo` helper functions. They are used to connect/disconnect to the test database and empty the database before starting a test. The Typescript compilation to JS will happen in memory using the `test/tsconfig.json` file.
 
 ## Running tests
 
@@ -309,6 +325,7 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 
 | Package                         | Description                                                              |
 | ------------------------------- | -------------------------------------------------------------------------|
+| aws-sdk                         | Amazon Web Services SDK - used to connect to s3                          |
 | bcrypt                          | A library to help you hash passwords.                                    |
 | body-parser                     | Express 4 middleware.                                                    |
 | compression                     | Express 4 middleware.                                                    |
@@ -320,6 +337,7 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | lodash                          | General utility library.                                                 |
 | mongoose                        | MongoDB ODM.                                                             |
 | morgan                          | HTTP request logger middleware                                           |
+| multer                          | Middleware for handling multipart/form-data                              |
 | nodemailer                      | Node.js library for sending emails.                                      |
 | passport                        | Simple and elegant authentication library for node.js                    |
 | passport-facebook               | Sign-in with Facebook plugin.                                            |

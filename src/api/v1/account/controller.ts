@@ -51,19 +51,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         if (!validator.isLength(req.body.password, { min: 8 })) validationErrors.push("Password must be at least 8 characters long" );
         if (validationErrors.length) return res.status(422).json(errorFormat(...validationErrors));
         req.body.email = validator.normalizeEmail(req.body.email, { "gmail_remove_dots": false });
-        
+        const existing = await User.findOne({ email: req.body.email });
+        if (existing) return res.status(422).json(errorFormat("Account already exists"));
+                
         const user = new User({
             email: req.body.email,
             password: req.body.password
         });
+        await user.save();
 
-        const existing = await User.findOne({ email: req.body.email });
-        if (existing) {
-            res.status(422).json(errorFormat("Account already exists"));
-        } else {
-            await user.save();
-            res.status(201).json({ token: signToken(user) });
-        }
+        res.status(201).json({ token: signToken(user) });
     } catch (error) {
         next(error);
     }
@@ -177,7 +174,6 @@ export const password = async (req: Request, res: Response, next: NextFunction):
         await user.save();
         res.sendStatus(200);
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };

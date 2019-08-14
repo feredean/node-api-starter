@@ -1,0 +1,140 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`API V1 /account GET / should return a list of users 1`] = `
+Object {
+  "Data": Array [
+    Object {
+      "avatar": "https://gravatar.com/avatar/cb7529c9a7c3297760ec76e41bf77d0a?s=200&d=retro",
+      "email": "valid@email.com",
+      "id": "GENERIC_USER_ID",
+      "profile": Object {},
+      "role": "admin",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /forgot should return 404, does not set a password reset token or send an email - email not registered 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Email not found",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /forgot should return 422, does not set a password reset token or send an email - no data 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Invalid data",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /login should return status 403 - email not registered 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Email not registered",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /login should return status 403 - invalid credentials 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Invalid credentials",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /login should return status 403 - no payload 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Invalid credentials",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /register should return status 422 - duplicate account 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Account already exists",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /register should return status 422 - invalid email and password 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Please enter a valid email address",
+    },
+    Object {
+      "msg": "Password must be at least 8 characters long",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /reset/:token should return 422 - expired token 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Invalid token",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /account POST /reset/:token should return 422 - password mismatch, password too short and invalid token 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "msg": "Password must be at least 8 characters long",
+    },
+    Object {
+      "msg": "Passwords do not match",
+    },
+    Object {
+      "msg": "Invalid token",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /upload POST / should return 201, the document added to storage and call s3.putObject, s3.getSignedUrl - one file 1`] = `
+Object {
+  "Data": Array [
+    Object {
+      "key": "GENERIC_UPLOAD_USER_ID/3eaf17869bb51bf27bd7c91bc9853973",
+      "url": "https://dummy.url.com",
+    },
+  ],
+}
+`;
+
+exports[`API V1 /upload POST / should return 201, the documents added to storage and call s3.putObject, s3.getSignedUrl twice - two files 1`] = `
+Object {
+  "Data": Array [
+    Object {
+      "key": "GENERIC_UPLOAD_USER_ID/3eaf17869bb51bf27bd7c91bc9853973",
+      "url": "https://dummy.url.com",
+    },
+    Object {
+      "key": "GENERIC_UPLOAD_USER_ID/edc564026997e2cb819c01522780365a",
+      "url": "https://dummy.url.com",
+    },
+  ],
+}
+`;
