@@ -37,6 +37,7 @@ This project has two purposes:
 - [Dependencies](#dependencies)
   - [`production`](#production)
   - [`development`](#development)
+- [Tips & Tricks](#tips-&-tricks)
 - [Related projects](#related-projects)
 - [License](#license)
 
@@ -118,11 +119,11 @@ Depending on your cloud provider of choice you can fairly quickly set up a manag
 - Amazon's [EKS](https://aws.amazon.com/eks/)
 - Microsoft's [AKS](https://azure.microsoft.com/en-in/services/kubernetes-service/)
 
-This project is deployed on a cluster set up with [kops](https://github.com/kubernetes/kops) on [aws spot instances](https://aws.amazon.com/ec2/spot/). If there is interest I plan on going more in depth on this subject and provide a walkthrough.
+This project is deployed on a cluster set up with [kops](https://github.com/kubernetes/kops) on [aws spot instances](https://aws.amazon.com/ec2/spot/). If there is interest I plan on going more in depth on this subject and provide a walk-through.
 
 ### MongoDB
 
-You can deploy MongoDB in a kubernetes cluster using [KubeDB](https://kubedb.com/). For more information about what the CRD supports visit [the documentation](https://kubedb.com/docs/0.12.0/guides/mongodb/).
+If you're like me and don't want the headache and uncertainty of managing your own production database take a look at [mongodb's atlas](https://www.mongodb.com/cloud/atlas). If you feel up to the task there are some kubernetes projects like [KubeDB](https://kubedb.com/) that can be of use.
 
 ## Deploying to Kubernetes
 
@@ -285,13 +286,13 @@ This project uses [Jest](https://facebook.github.io/jest/). When writing tests t
 
 ## Integration tests and jest
 
-When writing integration tests that use a shared resource (a database for example) you need to keep in mind that jest will test separate files in parallel which will lead to tests interfering with each other. Let's take an example. Lets say you want to test that `GET /v1/account/` will return a user you inserted just before you made the call. In another file you need to create a user in order to test something else. If you use the same database it is possible that for `GET /v1/account/` you will sometimes have one user (the one inserted in the test) some other times you will have multiple users (that got inserted in the database by other tests).
+When writing integration tests that use a shared resource (a database for example) you need to keep in mind that jest will test separate files in parallel which will lead to tests interfering with each other. For example lets say you want to test that `GET /v1/account/` will return a user you inserted just before you made the call. In another file you need to create a user in order to test something else. If you use the same database it is possible that `GET /v1/account/` will sometimes return one user (the one inserted in the test) and other times return multiple users (that got inserted by other tests).
 
 In order to avoid this you have some options:
 
 - Keep all the tests that use a shared resource in the same file
 - Get [really creative](https://stackoverflow.com/a/52029468/1906892) with your setup
-- Use the option `--runInBand` to force run the tests to run serially in the current process
+- Use the option `--runInBand` to force all the tests to run serially in the current process
 - Set up the tests in such a way that each file uses a separate database
 
 After running into issue with all the other options I decided to move all the tests into one file.  
@@ -361,6 +362,14 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity                   |
 
 To install or update these dependencies you can use `npm install` or `npm update`.
+
+# Tips & Tricks
+
+This section is a list of resources for building an API that can be useful in certain situations
+
+- If you are unsure what format your API's JSON responses should have take a look at this [specification](https://jsonapi.org/) and see if it could work for your project.
+- [Kong](https://github.com/Kong/kong) is a cloud-native, fast, scalable, and distributed Microservice Abstraction Layer (also known as an API Gateway, API Middleware or in some cases Service Mesh). It boasts a lot of cool [features](https://github.com/Kong/kong#features) and of course works with [kubernetes](https://github.com/Kong/kubernetes-ingress-controller)
+- RESTful API Modeling Language ([RAML](https://raml.org/)) makes it easy to manage the whole API lifecycle from design to sharing. It's concise - you only write what you need to define - and reusable. It is machine readable API design that is actually human friendly.
 
 # Related projects
 
