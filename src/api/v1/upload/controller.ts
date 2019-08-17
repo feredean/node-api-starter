@@ -1,4 +1,3 @@
-// import AWS from "aws-sdk";
 import crypto from "crypto";
 import S3 from "aws-sdk/clients/s3";
 
@@ -30,11 +29,11 @@ interface Document {
 export const create = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const result = {
-            Data: new Array<Document>()
+            data: new Array<Document>()
         };
 
-        for (let file of (req.files as File[])) {
-            var hash = crypto.createHash("md5").update(file.buffer).digest("hex");
+        for (const file of (req.files as File[])) {
+            const hash = crypto.createHash("md5").update(file.buffer).digest("hex");
             const key = `${req.user.sub}/${hash}`;
             await s3.putObject({
                 Body: file.buffer,
@@ -43,7 +42,7 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
                 ContentType: file.mimetype
             }).promise();
 
-            result.Data.push({
+            result.data.push({
                 url: s3.getSignedUrl("getObject", {
                     Bucket: S3_CONTENT_BUCKET,
                     Key: key,

@@ -3,7 +3,6 @@ const mockedPutObject = jest.fn();
 const mockedGetSignedUrl = jest.fn();
 jest.mock("aws-sdk/clients/s3", (): any => {
     return class S3 {
-        public constructor() {}
         public putObject(params: any): any {
             mockedPutObject(params);
             return {
@@ -22,6 +21,8 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import request from "supertest";
 import jwt from "jsonwebtoken";
+
+import {} from "types/passport-user";
 
 import { initMongo, disconnectMongo } from "setup";
 import { REGISTER_VALID, signToken, registerValidUser, RegisterUserOptions} from "helpers";

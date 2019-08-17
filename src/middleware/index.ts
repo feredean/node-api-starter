@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import logger from "util/logger";
-import { RequestHandler, NextFunction, Request, Response, } from "express";
+import { RequestHandler, NextFunction, Request, Response } from "express";
 import { format as errorFormat } from "util/error";
 import { SESSION_SECRET } from "config/secrets";
 import { USER_ROLES } from "config/settings";
@@ -19,7 +19,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     try {
         if (!req.headers.authorization) return res.sendStatus(401);
         const token = req.headers.authorization.split("Bearer ")[1];
-        req.user = await jwt.verify(token, SESSION_SECRET);
+        req.user = (await jwt.verify(token, SESSION_SECRET) as Express.User);
         next();
     } catch (error) {
         logger.error(error);
@@ -32,7 +32,7 @@ export const hasPermission = (level: string): RequestHandler => {
         try {
             if (!req.headers.authorization) return res.sendStatus(401);
             const token = req.headers.authorization.split("Bearer ")[1];
-            req.user = await jwt.verify(token, SESSION_SECRET);
+            req.user = (await jwt.verify(token, SESSION_SECRET) as Express.User);
             if (USER_ROLES.indexOf(req.user.role) >= USER_ROLES.indexOf(level)) {
                 next();
             } else {

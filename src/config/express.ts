@@ -11,11 +11,11 @@ import { CORS, APP_PORT } from "config/settings";
 export default (app: Express): void => {
     app.set("port", APP_PORT);
 
-    let corsOptions = {
+    const corsOptions = {
         origin: function (origin: string, callback: Function): void {
             if (!origin) return callback();
             let match = false;
-            for (let accepted of CORS) {
+            for (const accepted of CORS) {
                 if (origin.match(accepted)) match = true;
             }
             callback(null, match);
