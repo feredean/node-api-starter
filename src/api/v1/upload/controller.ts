@@ -30,7 +30,7 @@ interface Document {
 export const create = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const result = {
-            Data: new Array<Document>()
+            data: new Array<Document>()
         };
 
         for (let file of (req.files as File[])) {
@@ -43,7 +43,7 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
                 ContentType: file.mimetype
             }).promise();
 
-            result.Data.push({
+            result.data.push({
                 url: s3.getSignedUrl("getObject", {
                     Bucket: S3_CONTENT_BUCKET,
                     Key: key,
