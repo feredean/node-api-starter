@@ -37,7 +37,7 @@ This project has two purposes:
 - [Dependencies](#dependencies)
   - [`production`](#production)
   - [`development`](#development)
-- [Tips & Tricks](#tips-&-tricks)
+- [Resources](#resources)
 - [Related projects](#related-projects)
 - [License](#license)
 
@@ -232,7 +232,7 @@ Any build that runs the compiled `dist/server.js` must have the NODE_PATH set up
 
 > module names are considered resource identifiers, and are mapped to the output as they appear in the source
 
-As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not applied to the output. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found in <https://github.com/microsoft/TypeScript/issues/10866>.
+As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not applied to the output. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found [here](https://github.com/microsoft/TypeScript/issues/10866).
 
 The approach chosen for this project is to:
 
@@ -363,13 +363,14 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 
 To install or update these dependencies you can use `npm install` or `npm update`.
 
-# Tips & Tricks
+# Resources
 
 This section is a list of resources for building an API that can be useful in certain situations
 
 - If you are unsure what format your API's JSON responses should have take a look at this [specification](https://jsonapi.org/) and see if it could work for your project.
 - [Kong](https://github.com/Kong/kong) is a cloud-native, fast, scalable, and distributed Microservice Abstraction Layer (also known as an API Gateway, API Middleware or in some cases Service Mesh). It boasts a lot of cool [features](https://github.com/Kong/kong#features) and of course works with [kubernetes](https://github.com/Kong/kubernetes-ingress-controller)
 - RESTful API Modeling Language ([RAML](https://raml.org/)) makes it easy to manage the whole API lifecycle from design to sharing. It's concise - you only write what you need to define - and reusable. It is machine readable API design that is actually human friendly.
+- Brought to you by Heroku, [12factor](https://12factor.net/) is a methodology for building software-as-a-service applications
 
 # Related projects
 
