@@ -210,7 +210,7 @@ describe("API V1", (): void => {
             });
         
         });
-        
+     
         describe("POST /login", (): void => {  
             beforeEach(async (): Promise<void> => initMongo());
             afterAll(async (): Promise<void> => disconnectMongo());
@@ -358,10 +358,29 @@ describe("API V1", (): void => {
             });
         });
 
-        describe("POST /profile", (): void => {
-            beforeEach(async (): Promise<void> => {
-                await initMongo();
+        describe("GET /profile", (): void => {
+            beforeEach(async (): Promise<void> => await initMongo());
+            afterAll(async (): Promise<void> => disconnectMongo());
+
+            it("should return 200 and the user's profile information", async (): Promise<void> => {
+                const token = await registerValidUser(userOpts);
+                const { body } = await request(app)
+                    .get("/v1/account/profile")
+                    .set("authorization", `Bearer ${token}`)
+                    .expect(200);
+                expect(body).toMatchSnapshot();
             });
+
+            it("should return 401 - invalid authorization token", async (): Promise<void> => {
+                await registerValidUser(userOpts);
+                await request(app)
+                    .get("/v1/account/profile")
+                    .expect(401);
+            });
+        });
+
+        describe("POST /profile", (): void => {
+            beforeEach(async (): Promise<void> => await initMongo());
             afterAll(async (): Promise<void> => disconnectMongo());
             const PROFILE_DATA = {
                 name: "Valid User",

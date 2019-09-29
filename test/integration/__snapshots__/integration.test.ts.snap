@@ -14,6 +14,16 @@ Object {
 }
 `;
 
+exports[`API V1 /account GET /profile should return 200 and the user's profile information 1`] = `
+Object {
+  "avatar": "https://gravatar.com/avatar/cb7529c9a7c3297760ec76e41bf77d0a?s=200&d=retro",
+  "email": "valid@email.com",
+  "id": "GENERIC_USER_ID",
+  "profile": Object {},
+  "role": "user",
+}
+`;
+
 exports[`API V1 /account POST /forgot should return 404, does not set a password reset token or send an email - email not registered 1`] = `
 Object {
   "errors": Array [
