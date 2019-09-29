@@ -12,7 +12,8 @@ router.post("/login", controller.login);
 router.post("/register", controller.register);
 router.post("/forgot", controller.forgot);
 router.post("/reset/:token", controller.reset);
-router.post("/profile", mw.isAuthenticated, controller.profile);
+router.get("/profile", mw.isAuthenticated, controller.getProfile);
+router.post("/profile", mw.isAuthenticated, controller.postProfile);
 router.post("/password", mw.isAuthenticated, controller.password);
 router.post("/delete", mw.isAuthenticated, controller.deleteAccount);
 

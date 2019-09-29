@@ -150,7 +150,7 @@ export const reset = async (req: Request, res: Response, next: NextFunction): Pr
         next(error);
     }
 };
-export const profile = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+export const postProfile = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const user = await User.findOne({ id: req.user.sub });
         user.profile.name = req.body.name;
@@ -159,6 +159,14 @@ export const profile = async (req: Request, res: Response, next: NextFunction): 
         user.profile.website = req.body.website;
         await user.save();
         res.sendStatus(200);
+    } catch (error) {
+        next(error);
+    }
+};
+export const getProfile = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+    try {
+        const user = await User.findOne({ id: req.user.sub });
+        res.status(200).json(user.format());
     } catch (error) {
         next(error);
     }
