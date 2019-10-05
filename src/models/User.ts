@@ -89,11 +89,11 @@ userSchema.methods = {
             role: this.role,
             avatar: this.gravatar(),
             profile: {
-                name: this.name,
-                gender: this.gender,
-                location: this.location,
-                website: this.website,
-                picture: this.picture
+                name: this.profile.name,
+                gender: this.profile.gender,
+                location: this.profile.location,
+                website: this.profile.website,
+                picture: this.profile.picture
             }
         };
 

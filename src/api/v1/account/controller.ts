@@ -11,7 +11,8 @@ import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING } from "config/settings";
 import * as emailTemplates from "resources/emails";
 
 import { format as errorFormat } from "util/error";
-import { User, UserDocument, UserAPIFormat } from "models/User";
+import { SUCCESSFUL_RESPONSE } from "util/success";
+import { User, UserDocument } from "models/User";
 
 const signToken = (user: UserDocument): string => jwt.sign({
     email: user.email,
@@ -30,20 +31,6 @@ export const refresh = async (req: Request, res: Response, next: NextFunction): 
         next(error);
     }
 };
-export const index = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const users = await User.find({});
-        const result = {
-            Data: new Array<UserAPIFormat>()
-        };
-        for (const user of users) {
-            result.Data.push(user.format());
-        }
-        res.status(200).json(result);
-    } catch (error) {
-        next();
-    }
-};
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const validationErrors = [];
@@ -53,10 +40,13 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         req.body.email = validator.normalizeEmail(req.body.email, { "gmail_remove_dots": false });
         const existing = await User.findOne({ email: req.body.email });
         if (existing) return res.status(422).json(errorFormat("Account already exists"));
-                
+
         const user = new User({
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            profile: {
+                name: req.body.name
+            }
         });
         await user.save();
 
@@ -106,7 +96,7 @@ export const forgot = async (req: Request, res: Response, next: NextFunction): P
         };
 
         await transporter.sendMail(mailOptions);
-        res.sendStatus(201);
+        res.status(201).json(SUCCESSFUL_RESPONSE);
     } catch (error) {
         next(error);
     }
@@ -145,7 +135,7 @@ export const reset = async (req: Request, res: Response, next: NextFunction): Pr
         };
         await transporter.sendMail(mailOptions);
 
-        res.sendStatus(201);
+        res.status(201).json(SUCCESSFUL_RESPONSE);
     } catch (error) {
         next(error);
     }
@@ -158,7 +148,7 @@ export const postProfile = async (req: Request, res: Response, next: NextFunctio
         user.profile.location = req.body.location;
         user.profile.website = req.body.website;
         await user.save();
-        res.sendStatus(200);
+        res.status(200).json(user.format());
     } catch (error) {
         next(error);
     }
@@ -180,7 +170,7 @@ export const password = async (req: Request, res: Response, next: NextFunction):
         const user = await User.findOne({ id: req.user.sub });
         user.password = req.body.password;
         await user.save();
-        res.sendStatus(200);
+        res.status(200).json(SUCCESSFUL_RESPONSE);
     } catch (error) {
         next(error);
     }
@@ -188,7 +178,7 @@ export const password = async (req: Request, res: Response, next: NextFunction):
 export const deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         await User.deleteOne({ id: req.user.sub });
-        res.sendStatus(200);
+        res.status(200).json(SUCCESSFUL_RESPONSE);
     } catch (error) {
         next(error);
     }

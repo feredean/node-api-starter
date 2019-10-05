@@ -7,6 +7,8 @@ import * as mw from "middleware";
 import logger from "util/logger";
 
 mongoose.set("useCreateIndex", true);
+mongoose.set("useUnifiedTopology", true);
+
 mongoose.connect(MONGO_URI, { useNewUrlParser: true })
     .catch((err): void => {
         logger.error("MongoDB connection error. Please make sure MongoDB is running. " + err);
