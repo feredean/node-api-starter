@@ -133,7 +133,7 @@ First you need to have an `.env.prod` file that has all the secrets that will be
 kubectl create secret generic node-starter --from-env-file=.env.prod
 ```
 
-Notice that in `deployment.yaml` the environment is loaded from the node-starter secret
+Notice that in `.kubernetes/deployment.yaml` the environment is loaded from the node-starter secret
 
 ```yaml
 envFrom:
@@ -144,7 +144,7 @@ envFrom:
 Finally you need to create the kubernetes deployment, service and optionally the horizontal pod autoscaler that can later be paired with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler). To do this simply run the following:
 
 ```zsh
-kubectl create -f deployment.yaml
+kubectl create -f .kubernetes/deployment.yaml
 ```
 
 If somehow a deadly bug has managed to make its way past the test suite and got deployed to production where it's wreaking havoc you need to run following command:
