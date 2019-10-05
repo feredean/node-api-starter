@@ -6,7 +6,8 @@ import { Express } from "express";
 
 import logger from "util/logger";
 import passport from "config/passport";
-import { CORS, APP_PORT } from "config/settings";
+import { APP_PORT } from "config/settings";
+import { CORS } from "config/secrets";
 
 export default (app: Express): void => {
     app.set("port", APP_PORT);
@@ -15,9 +16,7 @@ export default (app: Express): void => {
         origin: function (origin: string, callback: Function): void {
             if (!origin) return callback();
             let match = false;
-            for (const accepted of CORS) {
-                if (origin.match(accepted)) match = true;
-            }
+            if (origin.match(new RegExp(CORS))) match = true;
             callback(null, match);
         }
     };

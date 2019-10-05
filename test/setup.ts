@@ -17,6 +17,7 @@ process.env.SENDGRID_USER = "not_used";
 process.env.AWS_ACCESS_KEY_ID = "not_used";
 process.env.AWS_ACCESS_KEY_SECRET = "not_used";
 
+process.env.CORS = "not_used";
 export const initMongo = async (): Promise<void> => {
     async function clearDB(): Promise<void> {
         await Promise.all(
