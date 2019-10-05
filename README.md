@@ -184,6 +184,7 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 | Name | Description |
 | ------------------------ | -----------------------------------------------------------------------------------------------------------|
 | **.circleci**            | Contains CircleCI settings for continuous deployment                                                       |
+| **.kubernetes**          | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)                 |
 | **.vscode**              | Contains VS Code specific settings                                                                         |
 | **dist**                 | Contains the distributable (or output) from your TypeScript build. This is the code you ship               |
 | **node_modules**         | Contains all your npm dependencies                                                                         |
@@ -202,7 +203,6 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 | .eslintignore            | Config settings for paths to exclude from linting                                                          |
 | .eslintrc                | Config settings for ESLint code style checking                                                             |
 | .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm                         |
-| deployment.yaml          | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)                 |
 | Dockerfile               | Used to build the docker image in the `dockerize` job in `.circleci/config.yml`                            |
 | jest.config.js           | Used to configure Jest running tests written in TypeScript                                                 |
 | package.json             | File that contains npm dependencies as well as build scripts                                               |

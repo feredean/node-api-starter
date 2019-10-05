@@ -5,7 +5,6 @@ import * as controller from "api/v1/account/controller";
 
 const router = express.Router();
 
-router.get("/", mw.hasPermission("admin"), controller.index);
 // Sliding session - also used to refresh jwt payload (such as role change)
 router.get("/jwt/refresh", mw.isAuthenticated, controller.refresh);
 router.post("/login", controller.login);

@@ -113,12 +113,10 @@ describe("API V1", (): void => {
         });
     });
 
-    describe("/account", (): void => {
-        const userOpts: RegisterUserOptions = {};
+    describe("/users", (): void => {
         const adminOpts: RegisterUserOptions = { role: "admin" };
-        
-        describe("GET /", (): void => {
 
+        describe("GET /", (): void => {
             beforeEach(async (): Promise<void> => {
                 await initMongo();
                 await registerValidUser(adminOpts);
@@ -128,7 +126,7 @@ describe("API V1", (): void => {
             it("should return a list of users", async (): Promise<void> => {
                 const user = await User.findOne({});
                 const { body } = await request(app)
-                    .get("/v1/account/")
+                    .get("/v1/users/")
                     .set("authorization", `Bearer ${signToken({
                         email: user.email,
                         id: user.id,
@@ -139,7 +137,11 @@ describe("API V1", (): void => {
                 expect(body).toMatchSnapshot();
             });
         });
+    });
 
+    describe("/account", (): void => {
+        const userOpts: RegisterUserOptions = {};
+        
         describe("GET /jwt/refresh", (): void => {
             beforeEach(async (): Promise<void> => initMongo());
             afterAll(async (): Promise<void> => disconnectMongo());
@@ -179,6 +181,12 @@ describe("API V1", (): void => {
                 "password": "pass"
             };
 
+            const REGISTER_VALID_NAME_EMAIL_PASSWORD = {
+                email: "valid@email.com",
+                password: "valid_password",
+                name: "valid name"
+            };
+
             beforeEach(async (): Promise<void> => initMongo());
             afterAll(async (): Promise<void> => disconnectMongo());
         
@@ -190,6 +198,16 @@ describe("API V1", (): void => {
                 expect(response.status).toBe(201);
                 const payload = await jwt.verify(response.body.token, SESSION_SECRET);
                 expect((payload as JWTPayload).email).toBe(REGISTER_VALID.email);
+            });
+        
+            it("should return status 201, create a user with a name", async (): Promise<void> => {
+                const response = await request(app)
+                    .post("/v1/account/register")
+                    .send(REGISTER_VALID_NAME_EMAIL_PASSWORD);
+
+                expect(response.status).toBe(201);
+                const user = await User.findOne({email: REGISTER_VALID_NAME_EMAIL_PASSWORD.email});
+                expect(user.profile.name).toBe(REGISTER_VALID_NAME_EMAIL_PASSWORD.name);
             });
         
             it("should return status 422 - invalid email and password", async (): Promise<void> => {
@@ -401,6 +419,16 @@ describe("API V1", (): void => {
                 expect(user.profile.gender).toBe(PROFILE_DATA.gender);
                 expect(user.profile.location).toBe(PROFILE_DATA.location);
                 expect(user.profile.website).toBe(PROFILE_DATA.website);
+            });
+
+            it("should return 200 and return the profile", async (): Promise<void> => {
+                const token = await registerValidUser(userOpts);
+                const { body } = await request(app)
+                    .post("/v1/account/profile")
+                    .set("authorization", `Bearer ${token}`)
+                    .send(PROFILE_DATA)
+                    .expect(200);
+                expect(body).toMatchSnapshot();
             });
 
             it("should return 401 - invalid authorization token", async (): Promise<void> => {
