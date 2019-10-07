@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
-import logger from "util/logger";
-import { TEST, PRODUCTION, NODE_ENV } from "config/settings";
 import fs from "fs";
+import { NODE_ENV, TEST, PRODUCTION } from "./settings";
+import logger from "../util/logger";
 
 if (!fs.existsSync(".env")) {
     logger.info("No .env file found, looking for variables in environment.");
@@ -27,7 +27,7 @@ const secrets = [
     "AWS_ACCESS_KEY_ID",
     "AWS_ACCESS_KEY_SECRET",
 
-    "CORS"
+    "CORS_REGEX"
 ];
 
 for (const secret of secrets) {
@@ -53,4 +53,4 @@ export const SENDGRID_USER = process.env["SENDGRID_USER"];
 export const SENDGRID_PASSWORD = process.env["SENDGRID_PASSWORD"];
 export const AWS_ACCESS_KEY_ID = process.env["AWS_ACCESS_KEY_ID"];
 export const AWS_ACCESS_KEY_SECRET = process.env["AWS_ACCESS_KEY_SECRET"];
-export const CORS = process.env["CORS"];
+export const CORS_REGEX = process.env["CORS_REGEX"];

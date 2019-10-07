@@ -1,9 +1,10 @@
 import crypto from "crypto";
 import S3 from "aws-sdk/clients/s3";
-
 import { Request, Response, NextFunction } from "express";
-import { S3_CONTENT_BUCKET, S3_CONTENT_LINK_EXPIRATION } from "config/settings";
-import { AWS_ACCESS_KEY_ID, AWS_ACCESS_KEY_SECRET } from "config/secrets";
+
+import { AWS_ACCESS_KEY_SECRET, AWS_ACCESS_KEY_ID } from "../../../config/secrets";
+import { S3_CONTENT_BUCKET, S3_CONTENT_LINK_EXPIRATION } from "../../../config/settings";
+
 
 const s3 = new S3({
     credentials: {
@@ -26,7 +27,7 @@ interface Document {
     key: string;
 }
 
-export const create = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+export const upload = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const result = {
             data: new Array<Document>()

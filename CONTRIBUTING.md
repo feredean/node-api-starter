@@ -1,6 +1,6 @@
 # For Contributors
 
-Thank you for your interest to contribute to this project! I will try to keep this project as up to date as possible and expand on the functionality and integrations that are already present. This being said any contribution or recommendation will be most welcome!
+Thank you for your interest to contribute to this project! I will try to keep this project as up to date as possible and expand on the functionality and integrations that are already present. This being said any contribution or feedback will be most welcome!
 
 ## Commit Messages
 

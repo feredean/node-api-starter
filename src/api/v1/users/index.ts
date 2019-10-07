@@ -1,10 +1,9 @@
 import express from "express";
-
-import * as mw from "middleware";
-import * as controller from "api/v1/users/controller";
+import { hasPermission } from "../../../middleware";
+import { index } from "./controller";
 
 const router = express.Router();
 
-router.get("/", mw.hasPermission("admin"), controller.index);
+router.get("/", hasPermission("admin"), index);
 
-export default router;
+export const usersRouter = router;

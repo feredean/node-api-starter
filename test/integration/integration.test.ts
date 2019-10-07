@@ -24,10 +24,10 @@ import jwt from "jsonwebtoken";
 
 import {} from "types/passport-user";
 
-import { initMongo, disconnectMongo } from "setup";
-import { REGISTER_VALID, signToken, registerValidUser, RegisterUserOptions} from "helpers";
-import { SESSION_SECRET } from "config/secrets";
-import { User } from "models/User";
+import { RegisterUserOptions, registerValidUser, signToken, REGISTER_VALID } from "../helpers";
+import { initMongo, disconnectMongo } from "../setup";
+import { User } from "../../src/models/User";
+import { SESSION_SECRET } from "../../src/config/secrets";
 
 const GENERIC_UPLOAD_USER_ID = "GENERIC_UPLOAD_USER_ID";
 
@@ -39,7 +39,6 @@ interface JWTPayload {
 }
 
 import app from "app";
-
 describe("API V1", (): void => {
 
     describe("/hello", (): void => {

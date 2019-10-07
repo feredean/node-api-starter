@@ -2,7 +2,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import UUID from "uuid/v4";
-import { USER_ROLES } from "config/settings";
+import { USER_ROLES } from "../config/settings";
 
 export interface Profile {
     name?: string;

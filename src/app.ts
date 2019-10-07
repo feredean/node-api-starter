@@ -1,10 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
-import setupExpress from "config/express";
-import setupRoutesV1 from "config/routes/v1";
-import { MONGO_URI } from "config/secrets";
-import * as mw from "middleware";
-import logger from "util/logger";
+import { MONGO_URI } from "./config/secrets";
+import logger from "./util/logger";
+import { setupExpress } from "./config/express";
+import { handleMissing, handleErrors } from "./middleware";
+import { setupRoutesV1 } from "./config/routes";
 
 mongoose.set("useCreateIndex", true);
 mongoose.set("useUnifiedTopology", true);
@@ -20,7 +20,7 @@ const app = express();
 setupExpress(app);
 setupRoutesV1(app);
 
-app.use(mw.handleMissing);
-app.use(mw.handleErrors);
+app.use(handleMissing);
+app.use(handleErrors);
 
 export default app;
