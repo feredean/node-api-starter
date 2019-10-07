@@ -1,5 +1,6 @@
+import { handleMissing, isAuthenticated, hasPermission, handleErrors } from "../../src/middleware";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as mw from "middleware";
 
 const mockResponse = (): any => {
     const res: any = {};
@@ -14,7 +15,7 @@ describe("Middlewares", (): void => {
     describe("404 handler", (): void => {
         it("should return status 404", (): void => {
             const res = mockResponse();
-            mw.handleMissing({} as any, res);
+            handleMissing({} as any, res);
             expect(res.sendStatus).toHaveBeenCalledWith(404);
         });
     });
@@ -22,7 +23,7 @@ describe("Middlewares", (): void => {
     describe("error handler", (): void => {
         it("should return status 500 and Server Error message", (): void => {
             const res = mockResponse();
-            mw.handleErrors({} as any, {} as any, res, {} as any);
+            handleErrors({} as any, {} as any, res, {} as any);
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.json).toHaveBeenCalledWith({errors: [{ msg: "Server Error" }]});
         });
@@ -41,7 +42,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.isAuthenticated(req, res, nextMock);
+            await isAuthenticated(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
         it("should return status 401 - expired token", async (): Promise<void> => {
@@ -50,7 +51,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.isAuthenticated(req, res, nextMock);
+            await isAuthenticated(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
@@ -58,7 +59,7 @@ describe("Middlewares", (): void => {
             const req: any = { headers: {} };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.isAuthenticated(req, res, nextMock);
+            await isAuthenticated(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
@@ -71,7 +72,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("admin")(req, res, nextMock);
+            await hasPermission("admin")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
         it("should call next() - token needs user role - has admin role", async (): Promise<void> => {
@@ -80,7 +81,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("user")(req, res, nextMock);
+            await hasPermission("user")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
         it("should call next() - token needs user role - has user role", async (): Promise<void> => {
@@ -89,7 +90,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("user")(req, res, nextMock);
+            await hasPermission("user")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
         it("should return 401 - token needs admin role - has admin role but token is expired", async (): Promise<void> => {
@@ -98,7 +99,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("admin")(req, res, nextMock);
+            await hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
@@ -108,7 +109,7 @@ describe("Middlewares", (): void => {
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("admin")(req, res, nextMock);
+            await hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(403);
             expect(nextMock).toBeCalledTimes(0);
         });
@@ -116,7 +117,7 @@ describe("Middlewares", (): void => {
             const req: any = {headers: {} };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await mw.hasPermission("admin")(req, res, nextMock);
+            await hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });

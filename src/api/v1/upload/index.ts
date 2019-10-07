@@ -1,12 +1,12 @@
 import multer from "multer";
 import express from "express";
 
-import * as mw from "middleware";
-import * as controller from "api/v1/upload/controller";
+import { hasPermission } from "../../../middleware";
+import { upload } from "./controller";
 
 const router = express.Router();
-const upload = multer({});
+const m = multer({});
 
-router.post("/", [ mw.hasPermission("admin"), upload.any() ], controller.create);
+router.post("/", [ hasPermission("admin"), m.any() ], upload);
 
-export default router;
+export const uploadRouter = router;

@@ -1,5 +1,5 @@
 import { Logger, createLogger, format, transports } from "winston";
-import { NODE_ENV, PRODUCTION, TEST } from "config/settings";
+import { PRODUCTION, NODE_ENV, TEST } from "../config/settings";
 
 const logLevel = (): string => {
     switch (NODE_ENV) {

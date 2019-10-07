@@ -1,14 +1,15 @@
 import jwt from "jsonwebtoken";
-import logger from "util/logger";
 import { RequestHandler, NextFunction, Request, Response } from "express";
-import { format as errorFormat } from "util/error";
-import { SESSION_SECRET } from "config/secrets";
-import { USER_ROLES } from "config/settings";
+
+import logger from "../util/logger";
+import { SESSION_SECRET } from "../config/secrets";
+import { USER_ROLES } from "../config/settings";
+import { formatError } from "../util/error";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handleErrors = (error: Error, _req: Request, res: Response, _next: NextFunction): void => {
     logger.error(error.stack);
-    res.status(500).json(errorFormat("Server Error"));
+    res.status(500).json(formatError("Server Error"));
 };
 
 export const handleMissing = (_req: Request, res: Response): void => {

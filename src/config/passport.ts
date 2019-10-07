@@ -2,9 +2,9 @@ import passport from "passport";
 import passportLocal from "passport-local";
 import passportFacebook, { Profile } from "passport-facebook";
 import { Express, Request, Response, NextFunction } from "express";
+import { User, UserDocument } from "../models/User";
+import { FACEBOOK_ID, FACEBOOK_SECRET } from "./secrets";
 
-import { User, UserDocument } from "models/User";
-import { FACEBOOK_ID, FACEBOOK_SECRET } from "config/secrets";
 
 const LocalStrategy = passportLocal.Strategy;
 const FacebookStrategy = passportFacebook.Strategy;
@@ -90,6 +90,6 @@ passport.use(new LocalStrategy({
 //     }
 // }));
 
-export default (app: Express): void => {
+export const setupPassport = (app: Express): void => {
     app.use(passport.initialize());
 };

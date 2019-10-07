@@ -1,7 +1,9 @@
 # TypeScript Node API StarterPack
+
 [![Dependency Status](https://david-dm.org/feredean/node-api-starter.svg)](https://david-dm.org/feredean/node-api-starter) [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
 
-**Live Demo**: [https://node-api-starter.experiments.explabs.io](https://node-api-starter.experiments.explabs.io)
+**Live API Demo**: [https://node-api-starter.experiments.explabs.io](https://node-api-starter.experiments.explabs.io)  
+**Live Angular APP Demo**: [https://node-api-starter-angular-app.experiments.explabs.io](https://node-api-starter-angular-app.experiments.explabs.io)
 
 A boilerplate for Node.js APIs.
 
@@ -9,10 +11,12 @@ This project has two purposes:
 
 1. Provide a boilerplate for modern Node.js API development with the following requirements
     - fully configured development environment
-    - created to be used primarily as a backend for modern SPAs or PWAs
+    - created to be used primarily as a backend for SPAs or PWAs
     - have all the most common requirements already implemented (authentication, database integration, CI integration and more)
     <!-- - in depth documentation that does not stop at the app and also discusses deployment options with Kubernetes -->
-1. Serve as a reference for implementations that can vary from how to set up continuous deployment using CircleCI to getting rid of those mildly annoying `../../../../` imports.
+1. Serve as a reference for various implementations from CD with CircleCI to putting it all together with an example app.
+
+You can find the Angular APP source code here [https://github.com/feredean/node-api-starter-angular-app](https://github.com/feredean/node-api-starter-angular-app)
 
 # Table of contents
 
@@ -26,7 +30,7 @@ This project has two purposes:
   - [CircleCI](#circleci)
 - [Project Structure](#project-structure)
 - [Build scripts](#build-scripts)
-- [Import path workaround](#import-path-workaround)
+- [Import path quirks](#import-path-quirks)
 - [Debugging](#debugging)
 - [Testing](#testing)
   - [Integration tests and jest](#integration-tests-and-jest)
@@ -60,6 +64,8 @@ There are two ways to go about handling requirements. You can either follow the 
 
 # Getting started
 
+Set VSCode's Typescript import module specifier for the workspace to `relative` for more information have a look [here](#import-path-quirks)
+
 ```shell
 # Get the latest snapshot
 git clone --depth=1 https://github.com/feredean/node-api-starter.git <project_name>
@@ -75,10 +81,6 @@ npm run build
 
 # Copy the .env.example contents into the .env
 cat .env.example > .env
-
-# The STARTER_PATH env variable will be needed each time you run the API, be sure to persist it
-# If you decide to change the env variable name be sure to also change it in package.json build scripts
-export STARTER_PATH="$(pwd)/dist"
 
 # Run (development mode) the API on port 9100
 npm run watch
@@ -157,9 +159,7 @@ This will instantly roll back the deployment to the previous one.
 
 ## CircleCI
 
-To achieve continuous deployment I have chosen CircleCI. Recently Github has announced their new feature [actions](https://github.com/features/actions) which is currently still in beta. The GA release will still [take a while](https://twitter.com/natfriedman/status/1159514205940117504). When it's out I'm considering switching to it.
-
-Now, to deploy on CircleCI:
+To integrate with CircleCI:
 
 1. Go to [CircleCI](https://circleci.com/) and create an account
 1. Link your project
@@ -212,49 +212,55 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 
 [npm scripts](https://docs.npmjs.com/misc/scripts) can be found in `package.json` in the `scripts` section. They can call each other which means it's very easy to compose complex builds out of simple individual build scripts.
 
-Any build that runs the compiled `dist/server.js` must have the NODE_PATH set up. This is required for the [import path workaround](#import-path-workaround).
-
 | Npm Script | Description |
 | ------------------------- | -----------------------------------------------------------------------------------------------------------------|
-| `start`                   | Runs node on `dist/server.js` which is the apps entry point                                                      |
-| `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                               |
-| `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                                              |
-| `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                          |
+| `start`                   | Runs the compiled server `node dist/server.js`                                                                     |
+| `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                                 |
+| `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                                                |
+| `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                            |
 | `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task  |
-| `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                              |
-| `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                       |
-| `watch-test`              | Runs tests in watch mode                                                                                         |
-| `lint`                    | Runs ESLint on project files                                                                                     |
-| `check-deps`              | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version   |
+| `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                                |
+| `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                         |
+| `watch-test`              | Runs tests in watch mode                                                                                           |
+| `lint`                    | Runs ESLint on project files                                                                                       |
+| `check-deps`              | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version     |
 |<img width=100/>||
 
-# Import path workaround
+# Import path quirks
+
+To change the way VSCode does auto import simply search for `typescript import module` in settings and change it to `relative` for the workspace.
+
+![VSCode relative imports](https://user-images.githubusercontent.com/3910622/66314780-3429f880-e91d-11e9-8714-c6a79ced7030.png)
+
+You need to do this because 
 
 > module names are considered resource identifiers, and are mapped to the output as they appear in the source
 
-As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not applied to the output. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that can solve this problem, more on this issue and possible solutions can be found [here](https://github.com/microsoft/TypeScript/issues/10866).
+As a result the import paths will be copied over to the compiled js require paths. The compiled code will not work since the tsconfig options are not applied to the output. The Typescript compiler does not want to become a build tool. Normally in frontend projects this is taken care of by build tools such as webpack. There are packages that offer solutions, more on this [here](https://github.com/microsoft/TypeScript/issues/10866).
 
-The approach chosen for this project is to:
+If you really want to use absolute paths you can find a working example of this project using a different approach at this [commit](https://github.com/feredean/node-api-starter/tree/443fc222c7254e280d41063fa093d0129d68fd9a#import-path-workaround). I decided to drop it going forward since imports are usually added via autocompletion. The visual improvements from
 
-1. Add a `NODE_PATH` env variable that points to the `dist` folder. The path will be taken from an env variable in the system. For deployment the path will be set in the Dockerfile after copying over the dist.
+```ts
+import { UserDocument, User } from "../../../models/User";
+import { SESSION_SECRET, SENDGRID_USER, SENDGRID_PASSWORD } from "../../../config/secrets";
+import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING, RECOVERY_LANDING, SENDER_EMAIL } from "../../../config/settings";
+import { formatError } from "../../../util/error";
+import { passwordResetTemplate, passwordChangedConfirmationTemplate } from "../../../resources/emails";
+import { SUCCESSFUL_RESPONSE } from "../../../util/success";
+```
 
-    ```json
-        "watch-node": "NODE_PATH=$STARTER_PATH nodemon dist/server.js"
-    ```
+to
 
-2. Let the compiler know to look in the src folder for modules.
+```ts
+import { User, UserDocument } from "models/User";
+import { SESSION_SECRET, SENDGRID_USER, SENDGRID_PASSWORD } from "config/secrets";
+import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING } from "config/settings";
+import { formatError } from "util/error";
+import * as emailTemplates from "resources/emails";
+import { SUCCESSFUL_RESPONSE } from "util/success";
+```
 
-    ```json
-    {
-        "paths": {
-            "*": [
-                "src/*",
-                "node_modules/*",
-                "src/types/*"
-            ]
-        }
-    }
-    ```
+do not justify the complexity that comes with adding absolute path support.
 
 # Debugging
 
@@ -361,7 +367,7 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 | ts-jest                         | A preprocessor with sourcemap support to help use TypeScript with Jest                 |
 | typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity                   |
 
-To install or update these dependencies you can use `npm install` or `npm update`.
+If you're the type of person that likes to live life on the bleeding edge feel free to use `npm run check-deps`
 
 # Resources
 
