@@ -44,8 +44,9 @@ describe("API V1", (): void => {
     describe("/hello", (): void => {
         describe("GET /", (): void => {
             it("should return 200 OK", async (): Promise<void>  => {
-                await request(app).get("/v1/hello")
+                const { body } = await request(app).get("/v1/hello")
                     .expect(200);
+                expect(body).toMatchSnapshot();
             });
         });
     });
