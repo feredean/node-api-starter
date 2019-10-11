@@ -2,8 +2,8 @@
 
 [![Dependency Status](https://david-dm.org/feredean/node-api-starter.svg)](https://david-dm.org/feredean/node-api-starter) [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
 
-**Live API Demo**: [https://node-api-starter.experiments.explabs.io](https://node-api-starter.experiments.explabs.io)  
-**Live Angular APP Demo**: [https://node-api-starter-angular-app.experiments.explabs.io](https://node-api-starter-angular-app.experiments.explabs.io)
+**Live App Demo**: [https://node-api-starter-angular-app.experiments.explabs.io](https://node-api-starter-angular-app.experiments.explabs.io)  
+**Live API**: [https://node-api-starter.experiments.explabs.io/v1/hello](https://node-api-starter.experiments.explabs.io/v1/hello)  
 
 A boilerplate for Node.js APIs.
 
@@ -16,7 +16,7 @@ This project has two purposes:
     <!-- - in depth documentation that does not stop at the app and also discusses deployment options with Kubernetes -->
 1. Serve as a reference for various implementations from CD with CircleCI to putting it all together with an example app.
 
-You can find the Angular APP source code here [https://github.com/feredean/node-api-starter-angular-app](https://github.com/feredean/node-api-starter-angular-app)
+You can find the Angular App source code here [https://github.com/feredean/node-api-starter-angular-app](https://github.com/feredean/node-api-starter-angular-app)
 
 # Table of contents
 
@@ -24,6 +24,7 @@ You can find the Angular APP source code here [https://github.com/feredean/node-
   - [Quick start](#quick-start)
   - [Fancy start](#fancy-start)
 - [Getting started](#getting-started)
+- [Env Variables](#env-variables)
 - [Deployment](#deployment)
   - [Prerequisites](#prerequisites)
   - [Deploying to kubernetes](#deploying-to-kubernetes)
@@ -60,7 +61,7 @@ There are two ways to go about handling requirements. You can either follow the 
 - Install [Node Version Manager](https://github.com/nvm-sh/nvm#installation-and-update)
 - Configure nvm [Shell Integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) (highly recommend setting up zsh together with [oh my zsh](https://github.com/robbyrussell/oh-my-zsh)). Once you set it up it will automatically change the node version if the project has a `.nvmrc` file.
 - Install [docker](https://docs.docker.com/install/)
-- Run MongoDB in a docker container `docker run --name mongo-dev -p 27017:27017 mongo:4.0`
+- Run MongoDB in a docker container `docker run -d --name mongo-dev -p 27017:27017 mongo:4.0`
 
 # Getting started
 
@@ -89,6 +90,32 @@ npm run watch
 To build the project in VS Code press `cmd + shift + b`. You can also run tasks using the command pallet (`cmd + shift + p`) and select `Tasks: Run Task` > `npm: start` to run `npm start` for you.
 
 Finally, navigate to `http://localhost:9100` and you now have access to your API
+
+# Env Variables
+
+For how environment variables are imported and exported have a look in [src/config/secrets](src/config/secrets.ts). Here you can also change the `requiredSecrets` or the way `mongoURI` is constructed if for example you wish to use username/password when connecting to mongo in the development environment.
+
+| Name | Description |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+|                          | The session secret is used to sign the JWT tokens                                                                                     |
+| SESSION_SECRET           | A quick way to generate a secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`                     |
+|                          | The mongo host and port are not necessarily taken from the `.env` file they can be provided by the deployment environment such as k8s |
+| MONGO_HOST               | mongo host                                                                                                                            |
+| MONGO_PORT               | mongo port                                                                                                                            |
+| MONGO_DATABASE           | name of the database                                                                                                                  |
+| MONGO_USERNAME           | mongo user - not used for development, required for production                                                                        |
+| MONGO_PASSWORD           | mongo user's password - not used for development, required for production                                                             |
+|                          | Facebook credentials used for sign in with Facebook - currently not implemented                                                       |
+| FACEBOOK_ID              | Facebook ID                                                                                                                           |
+| FACEBOOK_SECRET          | Facebook Secret                                                                                                                       |
+|                          | Sendgrid credentials used by the `nodemailer` package in forgot/reset password functionality                                          |
+| SENDGRID_USER            | Sendgrid account user name                                                                                                            |
+| SENDGRID_PASSWORD        | Sendgrid account password                                                                                                             |
+|                          | AWS user used for uploading files to s3 with `AmazonS3FullAccess` Policy                                                                |
+| AWS_ACCESS_KEY_ID        | AWS Access key ID                                                                                                                     |
+| AWS_ACCESS_KEY_SECRET    | AWS Access key secret                                                                                                                 |
+|                          | This will be used to create a REGEX that will block origins that don't match                                                          |
+| CORS_REGEX               | use `localhost:\d{4}$` for development and `domain\.tld$` for production                                                              |
 
 # Deployment
 
@@ -223,8 +250,7 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 | `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                         |
 | `watch-test`              | Runs tests in watch mode                                                                                           |
 | `lint`                    | Runs ESLint on project files                                                                                       |
-| `check-deps`              | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version     |
-|<img width=100/>||
+| `check-deps` <img width=70/> | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version     |
 
 # Import path quirks
 

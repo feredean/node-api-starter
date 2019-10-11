@@ -9,12 +9,10 @@ if (!fs.existsSync(".env")) {
 
 if (NODE_ENV !== TEST) dotenv.config();
 
-const secrets = [
+const requiredSecrets = [
     "SESSION_SECRET",
 
     "MONGO_DATABASE",
-    "MONGO_USERNAME",
-    "MONGO_PASSWORD",
     "MONGO_HOST",
     "MONGO_PORT",
 
@@ -30,7 +28,15 @@ const secrets = [
     "CORS_REGEX"
 ];
 
-for (const secret of secrets) {
+if (NODE_ENV === PRODUCTION) {
+    requiredSecrets.push(...[
+        "MONGO_USERNAME",
+        "MONGO_PASSWORD"
+    ]);
+}
+
+
+for (const secret of requiredSecrets) {
     if (!process.env[secret]) {
         logger.error(`Env variable ${secret} is missing.`);
         process.exit(1);
