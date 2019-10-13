@@ -1,11 +1,11 @@
-# TypeScript Node API StarterPack
+# Typescript Node API Starter
 
-[![Dependency Status](https://david-dm.org/feredean/node-api-starter.svg)](https://david-dm.org/feredean/node-api-starter) [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
+[![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
 
 **Live App Demo**: [https://node-api-starter-angular-app.experiments.explabs.io](https://node-api-starter-angular-app.experiments.explabs.io)  
 **Live API**: [https://node-api-starter.experiments.explabs.io/v1/hello](https://node-api-starter.experiments.explabs.io/v1/hello)  
 
-A boilerplate for Node.js APIs.
+A boilerplate for Node.js APIs designed for app consumption, written in Typescript.
 
 This project has two purposes:
 
@@ -24,12 +24,12 @@ You can find the Angular App source code here [https://github.com/feredean/node-
   - [Quick start](#quick-start)
   - [Fancy start](#fancy-start)
 - [Getting started](#getting-started)
-- [Env Variables](#env-variables)
+- [Environment variables](#environment-variables)
 - [Deployment](#deployment)
   - [Prerequisites](#prerequisites)
   - [Deploying to kubernetes](#deploying-to-kubernetes)
   - [CircleCI](#circleci)
-- [Project Structure](#project-structure)
+- [Project structure](#project-structure)
 - [Build scripts](#build-scripts)
 - [Import path quirks](#import-path-quirks)
 - [Debugging](#debugging)
@@ -89,9 +89,9 @@ npm run watch
 
 To build the project in VS Code press `cmd + shift + b`. You can also run tasks using the command pallet (`cmd + shift + p`) and select `Tasks: Run Task` > `npm: start` to run `npm start` for you.
 
-Finally, navigate to `http://localhost:9100` and you now have access to your API
+Finally, navigate to [http://localhost:9100/v1/hello](http://localhost:9100/v1/hello) and you now have access to your API
 
-# Env Variables
+# Environment variables
 
 For how environment variables are imported and exported have a look in [src/config/secrets](src/config/secrets.ts). Here you can also change the `requiredSecrets` or the way `mongoURI` is constructed if for example you wish to use username/password when connecting to mongo in the development environment.
 
@@ -111,7 +111,7 @@ For how environment variables are imported and exported have a look in [src/conf
 |                          | Sendgrid credentials used by the `nodemailer` package in forgot/reset password functionality                                          |
 | SENDGRID_USER            | Sendgrid account user name                                                                                                            |
 | SENDGRID_PASSWORD        | Sendgrid account password                                                                                                             |
-|                          | AWS user used for uploading files to s3 with `AmazonS3FullAccess` Policy                                                                |
+|                          | AWS user used for uploading files to s3 with `AmazonS3FullAccess` Policy                                                              |
 | AWS_ACCESS_KEY_ID        | AWS Access key ID                                                                                                                     |
 | AWS_ACCESS_KEY_SECRET    | AWS Access key secret                                                                                                                 |
 |                          | This will be used to create a REGEX that will block origins that don't match                                                          |
@@ -206,7 +206,7 @@ To integrate with CircleCI:
 
 Congratulations! You how have an API set up and ready to embrace the CD workflow!
 
-# Project Structure
+# Project structure
 
 | Name | Description |
 | ------------------------ | -----------------------------------------------------------------------------------------------------------|
