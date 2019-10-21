@@ -7,7 +7,8 @@ import { handleMissing, handleErrors } from "./middleware";
 import { setupRoutesV1 } from "./config/routes";
 
 mongoose.set("useCreateIndex", true);
-mongoose.set("useUnifiedTopology", true);
+// https://github.com/Automattic/mongoose/issues/8180
+// mongoose.set("useUnifiedTopology", true);
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true })
     .catch((err): void => {
