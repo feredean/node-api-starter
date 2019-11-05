@@ -14,10 +14,9 @@ export const setupExpress = (app: Express): void => {
     app.set("port", APP_PORT);
 
     const corsOptions = {
-        origin: function (origin: string, callback: Function): void {
+        origin: (origin: string, callback: Function): void => {
             if (!origin) return callback();
-            let match = false;
-            if (origin.match(new RegExp(CORS_REGEX))) match = true;
+            const match = origin.match(new RegExp(CORS_REGEX)) ? true : false;
             callback(null, match);
         }
     };

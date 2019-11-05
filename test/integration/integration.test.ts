@@ -70,7 +70,7 @@ describe("API V1", (): void => {
                 await initMongo();
             });
 
-            afterAll(async(): Promise<void> => disconnectMongo());
+            afterAll(disconnectMongo);
 
             it("should return 201, the document added to storage and call s3.putObject, s3.getSignedUrl - one file", async (): Promise<void> => {
                 const token = await registerValidUser(adminOpts);
@@ -121,7 +121,7 @@ describe("API V1", (): void => {
                 await initMongo();
                 await registerValidUser(adminOpts);
             });
-            afterAll(async (): Promise<void> => disconnectMongo());
+            afterAll(disconnectMongo);
 
             it("should return a list of users", async (): Promise<void> => {
                 const user = await User.findOne({});
@@ -143,8 +143,8 @@ describe("API V1", (): void => {
         const userOpts: RegisterUserOptions = {};
         
         describe("GET /jwt/refresh", (): void => {
-            beforeEach(async (): Promise<void> => initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
 
             it("should return a fresher JWT", async (): Promise<void> => {
                 const token = await registerValidUser(userOpts);
@@ -187,8 +187,8 @@ describe("API V1", (): void => {
                 name: "valid name"
             };
 
-            beforeEach(async (): Promise<void> => initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
         
             it("should return status 201, create a user and return a JWT - valid register", async (): Promise<void> => {
                 const response = await request(app)
@@ -230,8 +230,8 @@ describe("API V1", (): void => {
         });
      
         describe("POST /login", (): void => {  
-            beforeEach(async (): Promise<void> => initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
             
             it("should return status 200 and the user's JWT - valid login", async (): Promise<void> => {
                 await registerValidUser(userOpts);
@@ -283,7 +283,7 @@ describe("API V1", (): void => {
                 await initMongo();
                 await registerValidUser(userOpts);
             });
-            afterAll(async (): Promise<void> => disconnectMongo());
+            afterAll(disconnectMongo);
             
             it("should return 201, set a password reset token and send an email", async (): Promise<void> => {
                 await request(app)
@@ -341,7 +341,7 @@ describe("API V1", (): void => {
                     passwordResetToken: "4ec7149e1c5d55721a9cb2b069c22ac0"
                 });
             });
-            afterAll(async (): Promise<void> => disconnectMongo());
+            afterAll(disconnectMongo);
 
             it("should return 201 and reset the password", async(): Promise<void> => {
                 let user = await User.findOne({});
@@ -377,8 +377,8 @@ describe("API V1", (): void => {
         });
 
         describe("GET /profile", (): void => {
-            beforeEach(async (): Promise<void> => await initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
 
             it("should return 200 and the user's profile information", async (): Promise<void> => {
                 const token = await registerValidUser(userOpts);
@@ -398,8 +398,8 @@ describe("API V1", (): void => {
         });
 
         describe("POST /profile", (): void => {
-            beforeEach(async (): Promise<void> => await initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
             const PROFILE_DATA = {
                 name: "Valid User",
                 gender: "User",
@@ -446,8 +446,8 @@ describe("API V1", (): void => {
         });
 
         describe("POST /password", (): void => {
-            beforeEach(async (): Promise<void> => initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
 
             const VALID_PASSWORD_PAYLOAD = {
                 password: "newValidPassword",
@@ -494,8 +494,8 @@ describe("API V1", (): void => {
         });
 
         describe("POST /delete", (): void => {
-            beforeEach(async (): Promise<void> => initMongo());
-            afterAll(async (): Promise<void> => disconnectMongo());
+            beforeEach(initMongo);
+            afterAll(disconnectMongo);
 
             it("should return 200 and delete the user", async (): Promise<void> => {
                 const token = await registerValidUser(userOpts);

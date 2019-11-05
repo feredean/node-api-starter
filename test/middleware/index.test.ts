@@ -36,88 +36,88 @@ describe("Middlewares", (): void => {
     const VALID_ADMIN_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhbGlkQGVtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTU2NTI1ODYzMiwic3ViIjoiYzA4MWZjZDItNTIwYi00Y2QxLThmMGItNTE3ZmE3N2ZmZTRjIn0.vabX4sliFmwcfiaR0h7lVgR1tl5jlrHX2uVbP4irnPQ";
 
     describe("isAuthenticated", (): void => {
-        it("should call next()", async (): Promise<void> => {
+        it("should call next()", (): void => {
             const req: any = {
                 headers: { authorization: VALID_USER_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await isAuthenticated(req, res, nextMock);
+            isAuthenticated(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
-        it("should return status 401 - expired token", async (): Promise<void> => {
+        it("should return status 401 - expired token", (): void => {
             const req: any = {
                 headers: { authorization: EXPIRED_USER_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await isAuthenticated(req, res, nextMock);
+            isAuthenticated(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
-        it("should return status 401 - missing authorization header", async (): Promise<void> => {
+        it("should return status 401 - missing authorization header", (): void => {
             const req: any = { headers: {} };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await isAuthenticated(req, res, nextMock);
+            isAuthenticated(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
     });
 
     describe("hasPermission", (): void => {
-        it("should call next() - token needs admin role - has admin role", async (): Promise<void> => {
+        it("should call next() - token needs admin role - has admin role", (): void => {
             const req: any = {
                 headers: { authorization: VALID_ADMIN_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("admin")(req, res, nextMock);
+            hasPermission("admin")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
-        it("should call next() - token needs user role - has admin role", async (): Promise<void> => {
+        it("should call next() - token needs user role - has admin role", (): void => {
             const req: any = {
                 headers: { authorization: VALID_ADMIN_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("user")(req, res, nextMock);
+            hasPermission("user")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
-        it("should call next() - token needs user role - has user role", async (): Promise<void> => {
+        it("should call next() - token needs user role - has user role", (): void => {
             const req: any = {
                 headers: { authorization: VALID_USER_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("user")(req, res, nextMock);
+            hasPermission("user")(req, res, nextMock);
             expect(nextMock).toHaveBeenCalled();
         });
-        it("should return 401 - token needs admin role - has admin role but token is expired", async (): Promise<void> => {
+        it("should return 401 - token needs admin role - has admin role but token is expired", (): void => {
             const req: any = {
                 headers: { authorization: EXPIRED_ADMIN_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("admin")(req, res, nextMock);
+            hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
-        it("should return 403 - token needs admin role - has user role", async (): Promise<void> => {
+        it("should return 403 - token needs admin role - has user role", (): void => {
             const req: any = {
                 headers: { authorization: VALID_USER_TOKEN }
             };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("admin")(req, res, nextMock);
+            hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(403);
             expect(nextMock).toBeCalledTimes(0);
         });
-        it("should return 401 when the authorization header is missing", async (): Promise<void> => {
+        it("should return 401 when the authorization header is missing", (): void => {
             const req: any = {headers: {} };
             const res = mockResponse();
             const nextMock = jest.fn();
-            await hasPermission("admin")(req, res, nextMock);
+            hasPermission("admin")(req, res, nextMock);
             expect(res.sendStatus).toHaveBeenCalledWith(401);
             expect(nextMock).toBeCalledTimes(0);
         });
