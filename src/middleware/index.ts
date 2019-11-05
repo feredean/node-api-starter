@@ -16,11 +16,11 @@ export const handleMissing = (_req: Request, res: Response): void => {
     res.sendStatus(404);
 };
 
-export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+export const isAuthenticated = (req: Request, res: Response, next: NextFunction): Response => {
     try {
         if (!req.headers.authorization) return res.sendStatus(401);
         const token = req.headers.authorization.split("Bearer ")[1];
-        req.user = (await jwt.verify(token, SESSION_SECRET) as Express.User);
+        req.user = jwt.verify(token, SESSION_SECRET) as Express.User;
         next();
     } catch (error) {
         logger.error(error);
@@ -29,11 +29,11 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
 };
 
 export const hasPermission = (level: string): RequestHandler => {
-    return async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+    return (req: Request, res: Response, next: NextFunction): Response => {
         try {
             if (!req.headers.authorization) return res.sendStatus(401);
             const token = req.headers.authorization.split("Bearer ")[1];
-            req.user = (await jwt.verify(token, SESSION_SECRET) as Express.User);
+            req.user = jwt.verify(token, SESSION_SECRET) as Express.User;
             if (USER_ROLES.indexOf(req.user.role) >= USER_ROLES.indexOf(level)) {
                 next();
             } else {

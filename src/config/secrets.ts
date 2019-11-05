@@ -35,21 +35,15 @@ if (NODE_ENV === PRODUCTION) {
     ]);
 }
 
-
-for (const secret of requiredSecrets) {
-    if (!process.env[secret]) {
-        logger.error(`Env variable ${secret} is missing.`);
-        process.exit(1);
-    }
+const missingSecrets = requiredSecrets.filter(s => !process.env[s]);
+if (missingSecrets.length > 0) {
+    missingSecrets.forEach((ms) => logger.error(`Env variable ${ms} is missing.`));
+    process.exit(1);
 }
 
-let mongoURI;
-
-if (NODE_ENV === PRODUCTION) {
-    mongoURI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`;
-} else {
-    mongoURI = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
-}
+const mongoURI = NODE_ENV === PRODUCTION
+    ? `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`
+    : `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
 
 export const SESSION_SECRET = process.env["SESSION_SECRET"];
 export const MONGO_URI = mongoURI;

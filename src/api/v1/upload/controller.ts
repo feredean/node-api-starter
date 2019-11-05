@@ -29,11 +29,8 @@ interface Document {
 
 export const upload = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
-        const result = {
-            data: new Array<Document>()
-        };
 
-        for (const file of (req.files as File[])) {
+        const s3Requests = (req.files as File[]).map( async (file) => {
             const hash = crypto.createHash("md5").update(file.buffer).digest("hex");
             const key = `${req.user.sub}/${hash}`;
             await s3.putObject({
@@ -43,17 +40,21 @@ export const upload = async (req: Request, res: Response, next: NextFunction): P
                 ContentType: file.mimetype
             }).promise();
 
-            result.data.push({
+            return {
                 url: s3.getSignedUrl("getObject", {
                     Bucket: S3_CONTENT_BUCKET,
                     Key: key,
                     Expires: S3_CONTENT_LINK_EXPIRATION
                 }),
-                key: key
-            });
-        }
+                key
+            };
+        });
 
-        res.status(201).json(result);
+        const results = await Promise.all(s3Requests);
+        
+        res.status(201).json({
+            data: results
+        });
     } catch (error) {
         next(error);
     }
