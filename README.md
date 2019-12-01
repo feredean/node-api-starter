@@ -240,17 +240,19 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 [npm scripts](https://docs.npmjs.com/misc/scripts) can be found in `package.json` in the `scripts` section. They can call each other which means it's very easy to compose complex builds out of simple individual build scripts.
 
 | Npm Script | Description |
-| ------------------------- | -----------------------------------------------------------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `start`                   | Runs the compiled server `node dist/server.js`                                                                     |
 | `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                                 |
 | `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                                                |
 | `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                            |
-| `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task  |
+| `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task    |
 | `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                                |
 | `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                         |
+| `test-debugger`           | Waits for a debugger to get attached and then runs tests                                                           |
 | `watch-test`              | Runs tests in watch mode                                                                                           |
+| `watch-test-debugger`     | Waits for a debugger to get attached and runs tests in watch mode                                                  |
 | `lint`                    | Runs ESLint on project files                                                                                       |
-| `check-deps` <img width=70/> | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version     |
+| `check-deps` <img width=120/> | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version |
 
 # Import path quirks
 
@@ -310,7 +312,7 @@ In `.vscode` folder you can find the `launch.json` file. Here you can find the c
 }
 ```
 
-Once this configuration is added make sure the app is running `npm run watch`, add breakpoints, hit `F5`, select the `node dist/server.js` process (usually the first one) and you're ready to go!
+Once this configuration is added make sure that either the app is running (`npm run watch`) or tests are running in debug mode (`npm run watch-test-debugger`). Now add breakpoints, hit `F5`, select the process you want to attach the debugger to and you're ready to go!
 
 # Testing
 
