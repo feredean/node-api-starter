@@ -6,11 +6,11 @@ import { setupExpress } from "./config/express";
 import { handleMissing, handleErrors } from "./middleware";
 import { setupRoutesV1 } from "./config/routes";
 
+mongoose.set("useNewUrlParser", true);
 mongoose.set("useCreateIndex", true);
-// https://github.com/Automattic/mongoose/issues/8180
-// mongoose.set("useUnifiedTopology", true);
+mongoose.set("useUnifiedTopology", true);
 
-mongoose.connect(MONGO_URI, { useNewUrlParser: true })
+mongoose.connect(MONGO_URI)
     .catch((err): void => {
         logger.error("MongoDB connection error. Please make sure MongoDB is running. " + err);
         process.exit(1);
