@@ -3,17 +3,17 @@
 [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
 
 **Live App Demo**: [https://node-api-starter-angular-app.experiments.explabs.io](https://node-api-starter-angular-app.experiments.explabs.io)  
-**Live API**: [https://node-api-starter.experiments.explabs.io/v1/hello](https://node-api-starter.experiments.explabs.io/v1/hello)  
+**Live API**: [https://node-api-starter.experiments.explabs.io/v1/hello](https://node-api-starter.experiments.explabs.io/v1/hello)
 
 A boilerplate for Node.js APIs designed for app consumption, written in Typescript.
 
 This project has two purposes:
 
 1. Provide a boilerplate for modern Node.js API development with the following requirements
-    - fully configured development environment
-    - created to be used primarily as a backend for SPAs or PWAs
-    - have all the most common requirements already implemented (authentication, database integration, CI integration and more)
-    <!-- - in depth documentation that does not stop at the app and also discusses deployment options with Kubernetes -->
+   - fully configured development environment
+   - created to be used primarily as a backend for SPAs or PWAs
+   - have all the most common requirements already implemented (authentication, database integration, CI integration and more)
+     <!-- - in depth documentation that does not stop at the app and also discusses deployment options with Kubernetes -->
 1. Serve as a reference for various implementations from CD with CircleCI to putting it all together with an example app.
 
 You can find the Angular App source code here [https://github.com/feredean/node-api-starter-angular-app](https://github.com/feredean/node-api-starter-angular-app)
@@ -95,47 +95,47 @@ Finally, navigate to [http://localhost:9100/v1/hello](http://localhost:9100/v1/h
 
 For how environment variables are imported and exported have a look in [src/config/secrets](src/config/secrets.ts). Here you can also change the `requiredSecrets` or the way `mongoURI` is constructed if for example you wish to use username/password when connecting to mongo in the development environment.
 
-| Name | Description |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-|                          | The session secret is used to sign the JWT tokens                                                                                     |
-| SESSION_SECRET           | A quick way to generate a secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`                     |
-|                          | The mongo host and port are not necessarily taken from the `.env` file they can be provided by the deployment environment such as k8s |
-| MONGO_HOST               | mongo host                                                                                                                            |
-| MONGO_PORT               | mongo port                                                                                                                            |
-| MONGO_DATABASE           | name of the database                                                                                                                  |
-| MONGO_USERNAME           | mongo user - not used for development, required for production                                                                        |
-| MONGO_PASSWORD           | mongo user's password - not used for development, required for production                                                             |
-|                          | Facebook credentials used for sign in with Facebook - currently not implemented                                                       |
-| FACEBOOK_ID              | Facebook ID                                                                                                                           |
-| FACEBOOK_SECRET          | Facebook Secret                                                                                                                       |
-|                          | Sendgrid credentials used by the `nodemailer` package in forgot/reset password functionality                                          |
-| SENDGRID_USER            | Sendgrid account user name                                                                                                            |
-| SENDGRID_PASSWORD        | Sendgrid account password                                                                                                             |
-|                          | AWS user used for uploading files to s3 with `AmazonS3FullAccess` Policy                                                              |
-| AWS_ACCESS_KEY_ID        | AWS Access key ID                                                                                                                     |
-| AWS_ACCESS_KEY_SECRET    | AWS Access key secret                                                                                                                 |
-|                          | This will be used to create a REGEX that will block origins that don't match                                                          |
-| CORS_REGEX               | use `localhost:\d{4}$` for development and `domain\.tld$` for production                                                              |
+| Name                  | Description                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+|                       | The session secret is used to sign the JWT tokens                                                                                     |
+| SESSION_SECRET        | A quick way to generate a secret: `node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`                     |
+|                       | The mongo host and port are not necessarily taken from the `.env` file they can be provided by the deployment environment such as k8s |
+| MONGO_HOST            | mongo host                                                                                                                            |
+| MONGO_PORT            | mongo port                                                                                                                            |
+| MONGO_DATABASE        | name of the database                                                                                                                  |
+| MONGO_USERNAME        | mongo user - not used for development, required for production                                                                        |
+| MONGO_PASSWORD        | mongo user's password - not used for development, required for production                                                             |
+|                       | Facebook credentials used for sign in with Facebook - currently not implemented                                                       |
+| FACEBOOK_ID           | Facebook ID                                                                                                                           |
+| FACEBOOK_SECRET       | Facebook Secret                                                                                                                       |
+|                       | Sendgrid credentials used by the `nodemailer` package in forgot/reset password functionality                                          |
+| SENDGRID_USER         | Sendgrid account user name                                                                                                            |
+| SENDGRID_PASSWORD     | Sendgrid account password                                                                                                             |
+|                       | AWS user used for uploading files to s3 with `AmazonS3FullAccess` Policy                                                              |
+| AWS_ACCESS_KEY_ID     | AWS Access key ID                                                                                                                     |
+| AWS_ACCESS_KEY_SECRET | AWS Access key secret                                                                                                                 |
+|                       | This will be used to create a REGEX that will block origins that don't match                                                          |
+| CORS_REGEX            | use `localhost:\d{4}$` for development and `domain\.tld$` for production                                                              |
 
 # Deployment
 
 The example in this project is built around the existence of a kubernetes cluster. You can easily change to your infrastructure of choice by changing the deploy step in `.circleci/config.yml` to pull the docker image wherever you need it.
 
 ```yaml
-  # pull the image from docker hub and deploy it to the k8s cluster
-  deploy:
-    docker:
-      - image: feredean/circleci-kops:0.1.0
-    environment:
-      IMAGE_NAME: feredean/node-api-starter
-      KOPS_STATE_STORE: s3://k8s-explabs-io-state-store
-    steps:
-      - run:
-          name: Deploy to k8s cluster
-          command: |
-            # Ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set in the project's env vars
-            kops export kubecfg --name k8s.explabs.io
-            kubectl set image deploy/node-api-starter node-api-starter=$IMAGE_NAME:$CIRCLE_SHA1
+# pull the image from docker hub and deploy it to the k8s cluster
+deploy:
+  docker:
+    - image: feredean/circleci-kops:0.1.0
+  environment:
+    IMAGE_NAME: feredean/node-api-starter
+    KOPS_STATE_STORE: s3://k8s-explabs-io-state-store
+  steps:
+    - run:
+        name: Deploy to k8s cluster
+        command: |
+          # Ensure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set in the project's env vars
+          kops export kubecfg --name k8s.explabs.io
+          kubectl set image deploy/node-api-starter node-api-starter=$IMAGE_NAME:$CIRCLE_SHA1
 ```
 
 ## Prerequisites
@@ -166,8 +166,8 @@ Notice that in `.kubernetes/deployment.yaml` the environment is loaded from the 
 
 ```yaml
 envFrom:
-- secretRef:
-    name: node-starter
+  - secretRef:
+      name: node-starter
 ```
 
 Finally you need to create the kubernetes deployment, service and optionally the horizontal pod autoscaler that can later be paired with the [cluster autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler). To do this simply run the following:
@@ -192,15 +192,15 @@ To integrate with CircleCI:
 1. Link your project
 1. Add the needed environment variables to run the test
 
-    ```zsh
-    # Used to connect to the kubernetes cluster
-    AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY
+   ```zsh
+   # Used to connect to the kubernetes cluster
+   AWS_ACCESS_KEY_ID
+   AWS_SECRET_ACCESS_KEY
 
-    # Used for publishing the image
-    DOCKERHUB_PASS
-    DOCKERHUB_USERNAME
-    ```
+   # Used for publishing the image
+   DOCKERHUB_PASS
+   DOCKERHUB_USERNAME
+   ```
 
 1. Make master branch a protected branch require `ci/circleci: test` check before merging from feature branches. Once a PR is merged into master CircleCI will automatically build, test and deploy the new version of the API.
 
@@ -208,51 +208,51 @@ Congratulations! You how have an API set up and ready to embrace the CD workflow
 
 # Project structure
 
-| Name | Description |
-| ------------------------ | -----------------------------------------------------------------------------------------------------------|
-| **.circleci**            | Contains CircleCI settings for continuous deployment                                                       |
-| **.kubernetes**          | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)                 |
-| **.vscode**              | Contains VS Code specific settings                                                                         |
-| **dist**                 | Contains the distributable (or output) from your TypeScript build. This is the code you ship               |
-| **node_modules**         | Contains all your npm dependencies                                                                         |
-| **src**                  | Contains your source code that will be compiled to the dist dir                                            |
-| **src/api**              | Contains all the API versions each with it's own controllers for the configured routes                     |
-| **src/config**           | Contains all the configuration needed to setup the API (express, routes and passport)                      |
-| **src/models**           | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB               |
-| **src/types**            | Holds .d.ts files not found on DefinitelyTyped                                                             |
-| **src/utils**            | Contains API wide snippets (Logger, Error Formatter)                                                       |
-| **src**/server.ts        | Entry point to your express app                                                                            |
-| **test**                 | Contains your tests. Separate from source because there is a different build process                       |
-| **test**/tsconfig.json   | Config settings for compiling the tests                                                                    |
-| .env                     | All the env variables needed to run the app. Gitignored, will be loaded by dotenv                          |
-| .env.example             | All the env variables needed to run the app. An example list of the keys that must exist in .env files     |
-| .env.prod                | All the env variables needed to run the app in production. Gitignored, will be used in the deployment      |
-| .eslintignore            | Config settings for paths to exclude from linting                                                          |
-| .eslintrc                | Config settings for ESLint code style checking                                                             |
-| .nvmrc                   | A file containing the node version used in the project automatically loaded by nvm                         |
-| Dockerfile               | Used to build the docker image in the `dockerize` job in `.circleci/config.yml`                            |
-| jest.config.js           | Used to configure Jest running tests written in TypeScript                                                 |
-| package.json             | File that contains npm dependencies as well as build scripts                                               |
-| tsconfig.json            | Config settings for compiling server code written in TypeScript                                            |
+| Name                   | Description                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| **.circleci**          | Contains CircleCI settings for continuous deployment                                                   |
+| **.kubernetes**        | Contains kubernetes configuration for running the app on a cluster (auto-scaling included)             |
+| **.vscode**            | Contains VS Code specific settings                                                                     |
+| **dist**               | Contains the distributable (or output) from your TypeScript build. This is the code you ship           |
+| **node_modules**       | Contains all your npm dependencies                                                                     |
+| **src**                | Contains your source code that will be compiled to the dist dir                                        |
+| **src/api**            | Contains all the API versions each with it's own controllers for the configured routes                 |
+| **src/config**         | Contains all the configuration needed to setup the API (express, routes and passport)                  |
+| **src/models**         | Models define Mongoose schemas that will be used in storing and retrieving data from MongoDB           |
+| **src/types**          | Holds .d.ts files not found on DefinitelyTyped                                                         |
+| **src/utils**          | Contains API wide snippets (Logger, Error Formatter)                                                   |
+| **src**/server.ts      | Entry point to your express app                                                                        |
+| **test**               | Contains your tests. Separate from source because there is a different build process                   |
+| **test**/tsconfig.json | Config settings for compiling the tests                                                                |
+| .env                   | All the env variables needed to run the app. Gitignored, will be loaded by dotenv                      |
+| .env.example           | All the env variables needed to run the app. An example list of the keys that must exist in .env files |
+| .env.prod              | All the env variables needed to run the app in production. Gitignored, will be used in the deployment  |
+| .eslintignore          | Config settings for paths to exclude from linting                                                      |
+| .eslintrc              | Config settings for ESLint code style checking                                                         |
+| .nvmrc                 | A file containing the node version used in the project automatically loaded by nvm                     |
+| Dockerfile             | Used to build the docker image in the `dockerize` job in `.circleci/config.yml`                        |
+| jest.config.js         | Used to configure Jest running tests written in TypeScript                                             |
+| package.json           | File that contains npm dependencies as well as build scripts                                           |
+| tsconfig.json          | Config settings for compiling server code written in TypeScript                                        |
 
 # Build scripts
 
 [npm scripts](https://docs.npmjs.com/misc/scripts) can be found in `package.json` in the `scripts` section. They can call each other which means it's very easy to compose complex builds out of simple individual build scripts.
 
-| Npm Script | Description |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `start`                   | Runs the compiled server `node dist/server.js`                                                                     |
-| `build`                   | Full build. Runs `build-ts` and `lint` build tasks                                                                 |
-| `build-ts`                | Compiles all source `.ts` files to `.js` files in the `dist` folder                                                |
-| `watch`                   | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                            |
-| `watch-node`              | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task    |
-| `watch-ts`                | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                                |
-| `test`                    | Runs tests using Jest test runner verbosely and generate a coverage report                                         |
-| `test-debugger`           | Waits for a debugger to get attached and then runs tests                                                           |
-| `watch-test`              | Runs tests in watch mode                                                                                           |
-| `watch-test-debugger`     | Waits for a debugger to get attached and runs tests in watch mode                                                  |
-| `lint`                    | Runs ESLint on project files                                                                                       |
-| `check-deps` <img width=120/> | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version |
+| Npm Script                    | Description                                                                                                     |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `start`                       | Runs the compiled server `node dist/server.js`                                                                  |
+| `build`                       | Full build. Runs `build-ts` and `lint` build tasks                                                              |
+| `build-ts`                    | Compiles all source `.ts` files to `.js` files in the `dist` folder                                             |
+| `watch`                       | Runs `watch-ts` and `watch-node` concurrently. Use this for development                                         |
+| `watch-node`                  | Runs node with nodemon so the process restarts if it crashes or a change is made. Used in the main `watch` task |
+| `watch-ts`                    | Same as `build-ts` but continuously watches `.ts` files and re-compiles when needed                             |
+| `test`                        | Runs tests using Jest test runner verbosely and generate a coverage report                                      |
+| `test-debugger`               | Waits for a debugger to get attached and then runs tests                                                        |
+| `watch-test`                  | Runs tests in watch mode                                                                                        |
+| `watch-test-debugger`         | Waits for a debugger to get attached and runs tests in watch mode                                               |
+| `lint`                        | Runs ESLint on project files                                                                                    |
+| `check-deps` <img width=120/> | Audits and upgrades (inside package.json run npm install to apply) dependencies to their latest stable version  |
 
 # Import path quirks
 
@@ -260,7 +260,7 @@ To change the way VSCode does auto import simply search for `typescript import m
 
 ![VSCode relative imports](https://user-images.githubusercontent.com/3910622/66314780-3429f880-e91d-11e9-8714-c6a79ced7030.png)
 
-You need to do this because 
+You need to do this because
 
 > module names are considered resource identifiers, and are mapped to the output as they appear in the source
 
@@ -270,10 +270,22 @@ If you really want to use absolute paths you can find a working example of this 
 
 ```ts
 import { UserDocument, User } from "../../../models/User";
-import { SESSION_SECRET, SENDGRID_USER, SENDGRID_PASSWORD } from "../../../config/secrets";
-import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING, RECOVERY_LANDING, SENDER_EMAIL } from "../../../config/settings";
+import {
+  SESSION_SECRET,
+  SENDGRID_USER,
+  SENDGRID_PASSWORD
+} from "../../../config/secrets";
+import {
+  JWT_EXPIRATION,
+  UNSUBSCRIBE_LANDING,
+  RECOVERY_LANDING,
+  SENDER_EMAIL
+} from "../../../config/settings";
 import { formatError } from "../../../util/error";
-import { passwordResetTemplate, passwordChangedConfirmationTemplate } from "../../../resources/emails";
+import {
+  passwordResetTemplate,
+  passwordChangedConfirmationTemplate
+} from "../../../resources/emails";
 import { SUCCESSFUL_RESPONSE } from "../../../util/success";
 ```
 
@@ -281,7 +293,11 @@ to
 
 ```ts
 import { User, UserDocument } from "models/User";
-import { SESSION_SECRET, SENDGRID_USER, SENDGRID_PASSWORD } from "config/secrets";
+import {
+  SESSION_SECRET,
+  SENDGRID_USER,
+  SENDGRID_PASSWORD
+} from "config/secrets";
 import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING } from "config/settings";
 import { formatError } from "util/error";
 import * as emailTemplates from "resources/emails";
@@ -304,11 +320,11 @@ In `.vscode` folder you can find the `launch.json` file. Here you can find the c
 
 ```json
 {
-    "type": "node",
-    "request": "attach",
-    "name": "Attach Debugger to Process ID",
-    "processId": "${command:PickProcess}",
-    "protocol": "inspector"
+  "type": "node",
+  "request": "attach",
+  "name": "Attach Debugger to Process ID",
+  "processId": "${command:PickProcess}",
+  "protocol": "inspector"
 }
 ```
 
@@ -329,7 +345,7 @@ In order to avoid this you have some options:
 - Use the option `--runInBand` to force all the tests to run serially in the current process
 - Set up the tests in such a way that each file uses a separate database
 
-After running into issue with all the other options I decided to move all the tests into one file.  
+After running into issue with all the other options I decided to move all the tests into one file.
 
 ## Configure Jest
 
@@ -358,42 +374,42 @@ This project is using `ESLint` with `typescript-eslint/recommended` settings.
 
 ## `production`
 
-| Package                         | Description                                                              |
-| ------------------------------- | -------------------------------------------------------------------------|
-| aws-sdk                         | Amazon Web Services SDK - used to connect to s3                          |
-| bcrypt                          | A library to help you hash passwords.                                    |
-| body-parser                     | Express 4 middleware.                                                    |
-| compression                     | Express 4 middleware.                                                    |
-| cors                            | Express middleware that can be used to enable CORS with various options  |
-| dotenv                          | Loads environment variables from .env file.                              |
-| express                         | Node.js web framework.                                                   |
-| fbgraph                         | Facebook Graph API library.                                              |
-| jsonwebtoken                    | An implementation of JSON Web Tokens.                                    |
-| lodash                          | General utility library.                                                 |
-| mongoose                        | MongoDB ODM.                                                             |
-| morgan                          | HTTP request logger middleware                                           |
-| multer                          | Middleware for handling multipart/form-data                              |
-| nodemailer                      | Node.js library for sending emails.                                      |
-| passport                        | Simple and elegant authentication library for node.js                    |
-| passport-facebook               | Sign-in with Facebook plugin.                                            |
-| passport-local                  | Sign-in with Username and Password plugin.                               |
-| uuid                            | Simple, fast generation of RFC4122 UUIDS.                                |
-| validator                       | A library of string validators and sanitizers.                           |
-| winston                         | Logging library                                                          |
+| Package           | Description                                                             |
+| ----------------- | ----------------------------------------------------------------------- |
+| aws-sdk           | Amazon Web Services SDK - used to connect to s3                         |
+| bcrypt            | A library to help you hash passwords.                                   |
+| body-parser       | Express 4 middleware.                                                   |
+| compression       | Express 4 middleware.                                                   |
+| cors              | Express middleware that can be used to enable CORS with various options |
+| dotenv            | Loads environment variables from .env file.                             |
+| express           | Node.js web framework.                                                  |
+| fbgraph           | Facebook Graph API library.                                             |
+| jsonwebtoken      | An implementation of JSON Web Tokens.                                   |
+| lodash            | General utility library.                                                |
+| mongoose          | MongoDB ODM.                                                            |
+| morgan            | HTTP request logger middleware                                          |
+| multer            | Middleware for handling multipart/form-data                             |
+| nodemailer        | Node.js library for sending emails.                                     |
+| passport          | Simple and elegant authentication library for node.js                   |
+| passport-facebook | Sign-in with Facebook plugin.                                           |
+| passport-local    | Sign-in with Username and Password plugin.                              |
+| uuid              | Simple, fast generation of RFC4122 UUIDS.                               |
+| validator         | A library of string validators and sanitizers.                          |
+| winston           | Logging library                                                         |
 
 ## `development`
 
-| Package                         | Description                                                                            |
-| ------------------------------- | ---------------------------------------------------------------------------------------|
-| @types                          | Dependencies in this folder are `.d.ts` files used to provide types                    |
-| concurrently                    | Utility that manages multiple concurrent tasks. Used with npm scripts                  |
-| eslint                          | Linter for JavaScript and TypeScript files                                             |
-| jest                            | Testing library for JavaScript                                                         |
-| nodemon                         | Utility that automatically restarts node process on code changes                       |
-| npm-check-updates               | Upgrades package.json dependencies to the latest versions, ignoring specified version  |
-| supertest                       | HTTP assertion library                                                                 |
-| ts-jest                         | A preprocessor with sourcemap support to help use TypeScript with Jest                 |
-| typescript                      | JavaScript compiler/type checker that boosts JavaScript productivity                   |
+| Package           | Description                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| @types            | Dependencies in this folder are `.d.ts` files used to provide types                   |
+| concurrently      | Utility that manages multiple concurrent tasks. Used with npm scripts                 |
+| eslint            | Linter for JavaScript and TypeScript files                                            |
+| jest              | Testing library for JavaScript                                                        |
+| nodemon           | Utility that automatically restarts node process on code changes                      |
+| npm-check-updates | Upgrades package.json dependencies to the latest versions, ignoring specified version |
+| supertest         | HTTP assertion library                                                                |
+| ts-jest           | A preprocessor with sourcemap support to help use TypeScript with Jest                |
+| typescript        | JavaScript compiler/type checker that boosts JavaScript productivity                  |
 
 If you're the type of person that likes to live life on the bleeding edge feel free to use `npm run check-deps`
 

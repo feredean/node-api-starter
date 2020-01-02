@@ -1,4 +1,3 @@
-
 export interface APIError {
     errors: { msg: string }[];
 }
@@ -8,4 +7,4 @@ export const formatError = (...errors: string[]): APIError => {
         result.push({ msg: error });
     }
     return { errors: result };
-}; 
+};
