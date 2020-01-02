@@ -1,30 +1,41 @@
 import passport from "passport";
 import passportLocal from "passport-local";
-import passportFacebook, { Profile } from "passport-facebook";
-import { Express, Request, Response, NextFunction } from "express";
-import { User, UserDocument } from "../models/User";
-import { FACEBOOK_ID, FACEBOOK_SECRET } from "./secrets";
-
+import { Express } from "express";
+import { User } from "../models/User";
 
 const LocalStrategy = passportLocal.Strategy;
-const FacebookStrategy = passportFacebook.Strategy;
 
 /**
  * Sign in using Email and Password.
  */
-passport.use(new LocalStrategy({
-    usernameField: "email",
-    passwordField: "password"
-}, async (email, password, done): Promise<void> => {
-    try {
-        const user = await User.findOne({ email: email.toLowerCase() });
-        if (!user) return done(null, false, {message: "Email not registered"});
-        if (!await user.authenticate(password)) return done(null, false, { message: "Invalid credentials" });
-        done(null, user);
-    } catch (error) {
-        return done(error);
-    }
-}));
+passport.use(
+    new LocalStrategy(
+        {
+            usernameField: "email",
+            passwordField: "password"
+        },
+        async (email, password, done): Promise<void> => {
+            try {
+                const user = await User.findOne({ email: email.toLowerCase() });
+                if (!user) {
+                    return done(null, false, {
+                        message: "Email not registered"
+                    });
+                }
+
+                if (!(await user.authenticate(password))) {
+                    return done(null, false, {
+                        message: "Invalid credentials"
+                    });
+                }
+
+                done(null, user);
+            } catch (error) {
+                return done(error);
+            }
+        }
+    )
+);
 
 /**
  * OAuth Strategy Overview
@@ -41,7 +52,6 @@ passport.use(new LocalStrategy({
  *       - Else create a new account.
  */
 
-
 /**
  * Sign in with Facebook.
  */
@@ -51,9 +61,9 @@ passport.use(new LocalStrategy({
 //     callbackURL: "/auth/facebook/callback",
 //     profileFields: ["name", "email", "link", "locale", "timezone"],
 //     passReqToCallback: true
-// }, async (req: Request, 
-//     accessToken: string, 
-//     refreshToken: string, 
+// }, async (req: Request,
+//     accessToken: string,
+//     refreshToken: string,
 //     profile: Profile,
 //     done: Function
 // ): Promise<void> => {

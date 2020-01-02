@@ -39,25 +39,28 @@ export type UserDocument = mongoose.Document & {
     format: () => UserAPIFormat;
 };
 
-const userSchema = new mongoose.Schema({
-    id: { type: String, default: UUID, unique: true },
-    email: { type: String, unique: true },
-    password: String,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-    role: { type: String, default: "user", enum: USER_ROLES },
+const userSchema = new mongoose.Schema(
+    {
+        id: { type: String, default: UUID, unique: true },
+        email: { type: String, unique: true },
+        password: String,
+        passwordResetToken: String,
+        passwordResetExpires: Date,
+        role: { type: String, default: "user", enum: USER_ROLES },
 
-    facebook: String,
-    tokens: Array,
+        facebook: String,
+        tokens: Array,
 
-    profile: {
-        name: String,
-        gender: String,
-        location: String,
-        website: String,
-        picture: String
-    }
-}, { timestamps: true });
+        profile: {
+            name: String,
+            gender: String,
+            location: String,
+            website: String,
+            picture: String
+        }
+    },
+    { timestamps: true }
+);
 
 userSchema.pre("save", async function(next: Function): Promise<void> {
     const user = this as UserDocument;
@@ -72,14 +75,17 @@ userSchema.pre("save", async function(next: Function): Promise<void> {
 });
 
 userSchema.methods = {
-    authenticate: async function (candidatePassword: string): Promise<boolean> {
+    authenticate: async function(candidatePassword: string): Promise<boolean> {
         return bcrypt.compare(candidatePassword, this.password);
     },
-    gravatar: function (size: number = 200): string {
+    gravatar: function(size: number = 200): string {
         if (!this.email) {
             return `https://gravatar.com/avatar/?s=${size}&d=retro`;
         }
-        const md5 = crypto.createHash("md5").update(this.email).digest("hex");
+        const md5 = crypto
+            .createHash("md5")
+            .update(this.email)
+            .digest("hex");
         return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
     },
     format: function(): UserAPIFormat {

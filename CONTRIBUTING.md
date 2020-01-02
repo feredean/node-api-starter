@@ -16,19 +16,19 @@ description
 footer
 ```
 
-1. *label* is one of the following:
-    - `fix` - bug fixes.
-    - `feat` - features.
-    - `deployment` - changes to CircleCI or Kubernetes configuration
-    - `docs` - changes to docs
-    - `test` - changes to tests
-    - `style` - code style: spaces/alignment/wrapping etc.
-    - `chore` - build-related work, e.g. eslint / tsconfig config changes
-2. *namespace* is put in parenthesis after label and is optional. Must be lowercase.
-3. *title* is a brief summary of changes.
-4. *description* is **optional**, new-line separated from title and is in present tense.
-5. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues.
-6. *footer* should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
+1. _label_ is one of the following:
+   - `fix` - bug fixes.
+   - `feat` - features.
+   - `deployment` - changes to CircleCI or Kubernetes configuration
+   - `docs` - changes to docs
+   - `test` - changes to tests
+   - `style` - code style: spaces/alignment/wrapping etc.
+   - `chore` - build-related work, e.g. eslint / tsconfig config changes
+2. _namespace_ is put in parenthesis after label and is optional. Must be lowercase.
+3. _title_ is a brief summary of changes.
+4. _description_ is **optional**, new-line separated from title and is in present tense.
+5. _footer_ is **optional**, new-line separated from _description_ and contains "fixes" / "references" attribution to github issues.
+6. _footer_ should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
 
 Example:
 

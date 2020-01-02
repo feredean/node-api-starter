@@ -1,6 +1,16 @@
 import express from "express";
 
-import { refresh, login, register, forgot, reset, getProfile, postProfile, deleteAccount, password } from "./controller";
+import {
+    refresh,
+    login,
+    register,
+    forgot,
+    reset,
+    getProfile,
+    postProfile,
+    deleteAccount,
+    password
+} from "./controller";
 import { isAuthenticated } from "../../../middleware";
 
 const router = express.Router();

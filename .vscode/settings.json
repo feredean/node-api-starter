@@ -1,22 +1,9 @@
 {
-    "eslint.autoFixOnSave": true,
     "eslint.validate": [
         "javascript",
-        {
-            "language": "typescript",
-            "autoFix": true
-        }
+        "typescript"
     ],
-    "editor.formatOnSave": true,
-    "[javascript]": {
-        "editor.formatOnSave": false
-    },
-    "[typescript]": {
-        "editor.formatOnSave": false
-    },
-    "[markdown]": {
-        "editor.formatOnSave": false
-    },
+    "eslint.format.enable": true,
     "search.exclude": {
         "**/node_modules": true,
         "**/dist": true,
@@ -24,5 +11,9 @@
     },
     "typescript.referencesCodeLens.enabled": true,
     "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.preferences.importModuleSpecifier": "relative"
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
 }
