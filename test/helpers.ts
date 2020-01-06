@@ -9,17 +9,21 @@ interface JWTData {
     role: string;
     exp: string;
 }
-
+export interface JWTPayload {
+    email: string;
+    role: string;
+    sub: string;
+    exp: number;
+}
 export interface RegisterUserOptions {
     id?: string;
     role?: string;
     jwtExpiration?: string;
     randomize?: boolean;
+    email?: string;
+    password?: string;
 }
-export const REGISTER_VALID = {
-    email: "valid@email.com",
-    password: "valid_password"
-};
+export const GENERIC_UPLOAD_USER_ID = "GENERIC_UPLOAD_USER_ID";
 export const signToken = (data: JWTData): string => {
     return jwt.sign(
         {
@@ -38,13 +42,15 @@ export const registerValidUser = async ({
     randomize = false,
     id = "GENERIC_USER_ID",
     role = "user",
-    jwtExpiration = "5s"
+    jwtExpiration = "5s",
+    email = "valid@email.com",
+    password = "valid_password"
 }: RegisterUserOptions): Promise<string> => {
     const user = {
         email: randomize
             ? `${crypto.randomBytes(16).toString("hex")}@valid.com`
-            : REGISTER_VALID.email,
-        password: REGISTER_VALID.password,
+            : email,
+        password: password,
         id: id,
         role: role
     };

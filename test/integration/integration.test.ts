@@ -1,4 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+jest.mock("nodemailer");
+import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
+import request from "supertest";
+import jwt from "jsonwebtoken";
+
+import {} from "types/passport-user";
+
+import {
+    RegisterUserOptions,
+    registerValidUser,
+    signToken,
+    GENERIC_UPLOAD_USER_ID,
+    JWTPayload
+} from "../helpers";
+import { initMongo, disconnectMongo } from "../setup";
+import { User } from "../../src/models/User";
+import { SESSION_SECRET } from "../../src/config/secrets";
+
 const mockedPutObject = jest.fn();
 const mockedGetSignedUrl = jest.fn();
 jest.mock("aws-sdk/clients/s3", (): any => {
@@ -17,35 +37,11 @@ jest.mock("aws-sdk/clients/s3", (): any => {
     };
 });
 
-jest.mock("nodemailer");
-import nodemailer from "nodemailer";
-import bcrypt from "bcrypt";
-import request from "supertest";
-import jwt from "jsonwebtoken";
-
-import {} from "types/passport-user";
-
-import {
-    RegisterUserOptions,
-    registerValidUser,
-    signToken,
-    REGISTER_VALID
-} from "../helpers";
-import { initMongo, disconnectMongo } from "../setup";
-import { User } from "../../src/models/User";
-import { SESSION_SECRET } from "../../src/config/secrets";
-
-const GENERIC_UPLOAD_USER_ID = "GENERIC_UPLOAD_USER_ID";
-
-interface JWTPayload {
-    email: string;
-    role: string;
-    sub: string;
-    exp: number;
-}
-
 import app from "app";
 describe("API V1", () => {
+    beforeEach(async () => initMongo());
+    afterAll(disconnectMongo);
+
     describe("/hello", () => {
         describe("GET /", () => {
             it("should return 200 OK", async () => {
@@ -73,10 +69,7 @@ describe("API V1", () => {
             beforeEach(async () => {
                 mockedPutObject.mockClear();
                 mockedGetSignedUrl.mockClear();
-                await initMongo();
             });
-
-            afterAll(disconnectMongo);
 
             it("should return 201, the document added to storage and call s3.putObject, s3.getSignedUrl - one file", async () => {
                 const token = await registerValidUser(adminOpts);
@@ -123,25 +116,15 @@ describe("API V1", () => {
         const adminOpts: RegisterUserOptions = { role: "admin" };
 
         describe("GET /", () => {
+            let token: string;
             beforeEach(async () => {
-                await initMongo();
-                await registerValidUser(adminOpts);
+                token = await registerValidUser(adminOpts);
             });
-            afterAll(disconnectMongo);
 
             it("should return a list of users", async () => {
-                const user = await User.findOne({});
                 const { body } = await request(app)
                     .get("/v1/users/")
-                    .set(
-                        "authorization",
-                        `Bearer ${signToken({
-                            email: user.email,
-                            id: user.id,
-                            role: user.role,
-                            exp: "1s"
-                        })}`
-                    )
+                    .set("authorization", `Bearer ${token}`)
                     .expect(200);
                 expect(body).toMatchSnapshot();
             });
@@ -149,14 +132,30 @@ describe("API V1", () => {
     });
 
     describe("/account", () => {
-        const userOpts: RegisterUserOptions = {};
+        const REGISTER_INVALID_EMAIL_PASSWORD = {
+            email: "a@a.a",
+            password: "pass"
+        };
+
+        const REGISTER_VALID_NAME_EMAIL_PASSWORD = {
+            email: "valid@email.com",
+            password: "valid_password",
+            name: "valid name"
+        };
+
+        const REGISTER_VALID = {
+            email: "valid@email.com",
+            password: "valid_password"
+        };
+
+        const validUserOpts: RegisterUserOptions = {
+            email: REGISTER_VALID.email,
+            password: REGISTER_VALID.password
+        };
 
         describe("GET /jwt/refresh", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             it("should return a fresher JWT", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 const payload = jwt.verify(token, SESSION_SECRET) as JWTPayload;
                 const expiringToken = signToken({
                     id: payload.sub,
@@ -180,7 +179,7 @@ describe("API V1", () => {
             });
 
             it("should return 401 - token is valid but the user does not exist", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 await User.deleteMany({});
                 const refresh = await request(app)
                     .get("/v1/account/jwt/refresh")
@@ -190,20 +189,6 @@ describe("API V1", () => {
         });
 
         describe("POST /register", () => {
-            const REGISTER_INVALID_EMAIL_PASSWORD = {
-                email: "a@a.a",
-                password: "pass"
-            };
-
-            const REGISTER_VALID_NAME_EMAIL_PASSWORD = {
-                email: "valid@email.com",
-                password: "valid_password",
-                name: "valid name"
-            };
-
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             it("should return status 201, create a user and return a JWT - valid register", async () => {
                 const response = await request(app)
                     .post("/v1/account/register")
@@ -221,10 +206,11 @@ describe("API V1", () => {
                     .post("/v1/account/register")
                     .send(REGISTER_VALID_NAME_EMAIL_PASSWORD);
 
-                expect(response.status).toBe(201);
                 const user = await User.findOne({
                     email: REGISTER_VALID_NAME_EMAIL_PASSWORD.email
                 });
+
+                expect(response.status).toBe(201);
                 expect(user.profile.name).toBe(
                     REGISTER_VALID_NAME_EMAIL_PASSWORD.name
                 );
@@ -251,16 +237,14 @@ describe("API V1", () => {
         });
 
         describe("POST /login", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             it("should return status 200 and the user's JWT - valid login", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 const response = await request(app)
                     .post("/v1/account/login")
                     .send(REGISTER_VALID);
-                expect(response.status).toBe(200);
+
                 const payload = jwt.verify(response.body.token, SESSION_SECRET);
+                expect(response.status).toBe(200);
                 expect((payload as JWTPayload).email).toBe(
                     REGISTER_VALID.email
                 );
@@ -275,7 +259,7 @@ describe("API V1", () => {
             });
 
             it("should return status 403 - invalid credentials", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 const { body } = await request(app)
                     .post("/v1/account/login")
                     .send({
@@ -287,7 +271,7 @@ describe("API V1", () => {
             });
 
             it("should return status 403 - no payload", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 const { body } = await request(app)
                     .post("/v1/account/login")
                     .send({})
@@ -304,10 +288,8 @@ describe("API V1", () => {
                     sendMail: sendMailMock
                 });
 
-                await initMongo();
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
             });
-            afterAll(disconnectMongo);
 
             it("should return 201, set a password reset token and send an email", async () => {
                 await request(app)
@@ -358,7 +340,6 @@ describe("API V1", () => {
                 (nodemailer.createTransport as jest.Mock).mockReturnValue({
                     sendMail: sendMailMock
                 });
-                await initMongo();
                 await User.create({
                     email: "valid@email.com",
                     password:
@@ -368,7 +349,6 @@ describe("API V1", () => {
                     passwordResetToken: "4ec7149e1c5d55721a9cb2b069c22ac0"
                 });
             });
-            afterAll(disconnectMongo);
 
             it("should return 201 and reset the password", async () => {
                 let user = await User.findOne({});
@@ -406,11 +386,8 @@ describe("API V1", () => {
         });
 
         describe("GET /profile", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             it("should return 200 and the user's profile information", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 const { body } = await request(app)
                     .get("/v1/account/profile")
                     .set("authorization", `Bearer ${token}`)
@@ -419,7 +396,7 @@ describe("API V1", () => {
             });
 
             it("should return 401 - invalid authorization token", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 await request(app)
                     .get("/v1/account/profile")
                     .expect(401);
@@ -427,8 +404,6 @@ describe("API V1", () => {
         });
 
         describe("POST /profile", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
             const PROFILE_DATA = {
                 name: "Valid User",
                 gender: "User",
@@ -437,7 +412,7 @@ describe("API V1", () => {
             };
 
             it("should return 200 and change the user's profile information", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/profile")
                     .set("authorization", `Bearer ${token}`)
@@ -451,7 +426,7 @@ describe("API V1", () => {
             });
 
             it("should return 200 and return the profile", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 const { body } = await request(app)
                     .post("/v1/account/profile")
                     .set("authorization", `Bearer ${token}`)
@@ -461,7 +436,7 @@ describe("API V1", () => {
             });
 
             it("should return 401 - invalid authorization token", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/profile")
                     .send(PROFILE_DATA)
@@ -475,9 +450,6 @@ describe("API V1", () => {
         });
 
         describe("POST /password", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             const VALID_PASSWORD_PAYLOAD = {
                 password: "newValidPassword",
                 confirm: "newValidPassword"
@@ -489,7 +461,7 @@ describe("API V1", () => {
             };
 
             it("should return 200 and change the user's password", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", `Bearer ${token}`)
@@ -505,7 +477,7 @@ describe("API V1", () => {
             });
 
             it("should return 401 - invalid authorization token", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", "Bearer invalid_token")
@@ -521,7 +493,7 @@ describe("API V1", () => {
             });
 
             it("should return 422 - invalid data", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/password")
                     .set("authorization", `Bearer ${token}`)
@@ -538,11 +510,8 @@ describe("API V1", () => {
         });
 
         describe("POST /delete", () => {
-            beforeEach(initMongo);
-            afterAll(disconnectMongo);
-
             it("should return 200 and delete the user", async () => {
-                const token = await registerValidUser(userOpts);
+                const token = await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/delete")
                     .set("authorization", `Bearer ${token}`)
@@ -551,7 +520,7 @@ describe("API V1", () => {
             });
 
             it("should return 401 - invalid authorization token", async () => {
-                await registerValidUser(userOpts);
+                await registerValidUser(validUserOpts);
                 await request(app)
                     .post("/v1/account/delete")
                     .expect(401);
