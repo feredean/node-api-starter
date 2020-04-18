@@ -37,7 +37,7 @@
         "passport": "0.4.1",
         "passport-facebook": "3.0.0",
         "passport-local": "1.0.0",
-        "uuid": "3.3.3",
+        "uuid": "3.4.0",
         "validator": "12.1.0",
         "winston": "3.2.1"
     },
@@ -57,7 +57,7 @@
         "@types/passport-facebook": "2.1.9",
         "@types/passport-local": "1.0.33",
         "@types/supertest": "2.0.8",
-        "@types/uuid": "3.4.6",
+        "@types/uuid": "3.4.8",
         "@types/validator": "12.0.1",
         "@typescript-eslint/eslint-plugin": "2.28.0",
         "@typescript-eslint/parser": "2.28.0",
