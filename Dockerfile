@@ -1,4 +1,4 @@
-FROM node:12.6
+FROM node:12.16
 
 ENV NODE_ENV=production
 ENV PORT=9100
