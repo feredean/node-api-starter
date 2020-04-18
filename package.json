@@ -43,7 +43,7 @@
     },
     "devDependencies": {
         "@types/bcrypt": "3.0.0",
-        "@types/compression": "1.0.1",
+        "@types/compression": "1.7.0",
         "@types/cors": "2.8.6",
         "@types/express": "4.17.2",
         "@types/jest": "24.0.25",
