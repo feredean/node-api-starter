@@ -33,7 +33,7 @@
         "mongoose": "5.9.9",
         "morgan": "1.10.0",
         "multer": "1.4.2",
-        "nodemailer": "6.4.2",
+        "nodemailer": "6.4.6",
         "passport": "0.4.1",
         "passport-facebook": "3.0.0",
         "passport-local": "1.0.0",
