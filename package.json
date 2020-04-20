@@ -20,7 +20,7 @@
         "check-deps": "npm audit && ncu"
     },
     "dependencies": {
-        "aws-sdk": "2.658.0",
+        "aws-sdk": "2.659.0",
         "bcrypt": "3.0.8",
         "body-parser": "1.19.0",
         "compression": "1.7.4",
