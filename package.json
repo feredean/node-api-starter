@@ -67,7 +67,7 @@
         "nodemon": "2.0.3",
         "npm-check-updates": "7.0.1",
         "supertest": "4.0.2",
-        "ts-jest": "25.4.0",
+        "ts-jest": "26.1.0",
         "typescript": "3.8.3"
     }
 }
