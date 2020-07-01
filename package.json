@@ -50,7 +50,7 @@
         "@types/jsonwebtoken": "8.5.0",
         "@types/lodash": "4.14.150",
         "@types/mongoose": "5.7.14",
-        "@types/morgan": "1.9.0",
+        "@types/morgan": "1.9.1",
         "@types/multer": "1.4.3",
         "@types/nodemailer": "6.4.0",
         "@types/passport": "1.0.3",
