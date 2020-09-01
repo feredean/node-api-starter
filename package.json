@@ -51,7 +51,7 @@
         "@types/lodash": "4.14.157",
         "@types/mongoose": "5.7.14",
         "@types/morgan": "1.9.1",
-        "@types/multer": "1.4.3",
+        "@types/multer": "1.4.4",
         "@types/nodemailer": "6.4.0",
         "@types/passport": "1.0.3",
         "@types/passport-facebook": "2.1.10",
