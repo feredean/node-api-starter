@@ -1,23 +1,22 @@
+FROM node:12-alpine as builder
+
+WORKDIR /api
+
+COPY . . 
+
+RUN npm ci
+RUN npm run build
+
 FROM node:12.16
+
+COPY --from=builder /api/dist /api
+COPY --from=builder /api/node_modules /api/node_modules
 
 ENV NODE_ENV=production
 ENV PORT=9100
-
-COPY dist /api
-COPY package*.json ./
-RUN npm install
 
 WORKDIR /api
 
 EXPOSE 9100
 
 CMD ["node", "server.js"]
-      # - run: npm run build
-      # # cache distribution and files needed for deployment
-      # - save_cache:
-      #     key: v1-build-{{ .Environment.CIRCLE_SHA1 }}
-      #     paths:
-      #       - dist
-      #       - package-lock.json
-      #       - package.json
-      #       - Dockerfile
