@@ -204,6 +204,12 @@ To integrate with CircleCI:
 
 1. Make master branch a protected branch require `ci/circleci: test` check before merging from feature branches. Once a PR is merged into master CircleCI will automatically build, test and deploy the new version of the API.
 
+When changing configuration I recommend using the `circleci` cli to validate the `config.yml` file
+
+```zsh
+circleci config validate
+```
+
 Congratulations! You how have an API set up and ready to embrace the CD workflow!
 
 # Project structure
@@ -270,18 +276,18 @@ import { UserDocument, User } from "../../../models/User";
 import {
   SESSION_SECRET,
   SENDGRID_USER,
-  SENDGRID_PASSWORD
+  SENDGRID_PASSWORD,
 } from "../../../config/secrets";
 import {
   JWT_EXPIRATION,
   UNSUBSCRIBE_LANDING,
   RECOVERY_LANDING,
-  SENDER_EMAIL
+  SENDER_EMAIL,
 } from "../../../config/settings";
 import { formatError } from "../../../util/error";
 import {
   passwordResetTemplate,
-  passwordChangedConfirmationTemplate
+  passwordChangedConfirmationTemplate,
 } from "../../../resources/emails";
 import { SUCCESSFUL_RESPONSE } from "../../../util/success";
 ```
@@ -293,7 +299,7 @@ import { User, UserDocument } from "models/User";
 import {
   SESSION_SECRET,
   SENDGRID_USER,
-  SENDGRID_PASSWORD
+  SENDGRID_PASSWORD,
 } from "config/secrets";
 import { JWT_EXPIRATION, UNSUBSCRIBE_LANDING } from "config/settings";
 import { formatError } from "util/error";
