@@ -8,15 +8,15 @@ spec:
   selector:
     matchLabels:
       app: node-api-starter
+      category: open-source
   template:
     metadata:
       labels:
         app: node-api-starter
+        category: open-source
     spec:
-      nodeSelector:
-        kops.k8s.io/instancegroup: nodes
       containers:
-        - name: node-api-starter
+        - name: nas
           image: gcr.io/unique-serenity-287315/feredean/node-api-starter
           imagePullPolicy: Always
           ports:
