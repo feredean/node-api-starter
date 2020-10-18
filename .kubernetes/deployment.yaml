@@ -17,10 +17,12 @@ spec:
     spec:
       containers:
         - name: nas
-          image: gcr.io/unique-serenity-287315/feredean/node-api-starter
+          image: gcr.io/unique-serenity-287315/feredean/node-api-starter:ef40b5a90e06e8dbb81b0fd648ded2068c42060b
           imagePullPolicy: Always
           ports:
             - containerPort: 9100
           envFrom:
             - secretRef:
-                name: gcr-secret
+                name: node-starter
+      imagePullSecrets:
+        - name: gcr-secret
