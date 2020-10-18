@@ -44,7 +44,7 @@ workflows:
           container: nas
           deployment: node-api-starter
           google-compute-zone: GKE_COMPUTE_ZONE
-          image: gcr.io/unique-serenity-287315/feredean/node-api-starter
+          image: feredean/node-api-starter
           tag: $CIRCLE_SHA1
           requires:
             - test

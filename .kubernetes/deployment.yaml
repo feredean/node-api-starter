@@ -23,4 +23,4 @@ spec:
             - containerPort: 9100
           envFrom:
             - secretRef:
-                name: node-starter
+                name: gcr-secret
