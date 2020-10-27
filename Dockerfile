@@ -17,6 +17,4 @@ ENV PORT=9100
 
 WORKDIR /api
 
-EXPOSE 9100
-
 CMD ["node", "server.js"]
