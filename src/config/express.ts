@@ -4,20 +4,20 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import { Express } from "express";
 
-import { APP_PORT } from "./settings";
+// import { APP_PORT } from "./settings";
 import { CORS_REGEX } from "./secrets";
 import { setupPassport } from "./passport";
 import logger from "../util/logger";
 
 export const setupExpress = (app: Express): void => {
-    app.set("port", APP_PORT);
+    app.set("port", 80);
 
     const corsOptions = {
         origin: (origin: string, callback: Function): void => {
             if (!origin) return callback();
             const match = origin.match(new RegExp(CORS_REGEX)) ? true : false;
             callback(null, match);
-        }
+        },
     };
 
     setupPassport(app);
@@ -33,8 +33,8 @@ export const setupExpress = (app: Express): void => {
                 stream: {
                     write: (text: string): void => {
                         logger.info(text.substring(0, text.lastIndexOf("\n")));
-                    }
-                }
+                    },
+                },
             }
         )
     );

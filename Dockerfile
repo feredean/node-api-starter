@@ -13,7 +13,7 @@ COPY --from=builder /api/dist /api
 COPY --from=builder /api/node_modules /api/node_modules
 
 ENV NODE_ENV=production
-ENV PORT=9100
+ENV PORT=80
 
 WORKDIR /api
 
