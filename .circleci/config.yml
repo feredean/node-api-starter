@@ -8,7 +8,7 @@ jobs:
   # build the project and prepare it for deployment
   build:
     docker:
-      - image: circleci/node:12.18.4
+      - image: circleci/node:12.19.0
     working_directory: ~/api
     steps:
       - checkout
@@ -37,7 +37,7 @@ jobs:
   # run tests using the cached dependencies
   test:
     docker:
-      - image: circleci/node:12.18.4
+      - image: circleci/node:12.19.0
       - image: circleci/mongo:4.4
     working_directory: ~/api
     steps:
