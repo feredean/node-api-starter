@@ -46,7 +46,7 @@
         "@types/compression": "1.7.0",
         "@types/cors": "2.8.7",
         "@types/express": "4.17.8",
-        "@types/jest": "26.0.12",
+        "@types/jest": "26.0.15",
         "@types/jsonwebtoken": "8.5.0",
         "@types/lodash": "4.14.161",
         "@types/mongoose": "5.7.14",
