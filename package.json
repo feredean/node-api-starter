@@ -63,7 +63,7 @@
         "@typescript-eslint/parser": "2.30.0",
         "concurrently": "5.3.0",
         "eslint": "7.3.1",
-        "jest": "26.0.1",
+        "jest": "26.6.3",
         "nodemon": "2.0.3",
         "npm-check-updates": "7.0.1",
         "supertest": "4.0.2",
