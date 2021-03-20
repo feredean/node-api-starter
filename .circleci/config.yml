@@ -69,7 +69,7 @@ jobs:
   # pull the image from docker hub and deploy it to the k8s cluster
   deploy:
     docker:
-      - image: feredean/circleci-kops:0.1.0
+      - image: feredean/circleci-kops:1.0.0
     environment:
       IMAGE_NAME: feredean/node-api-starter
       KOPS_STATE_STORE: s3://k8s-explabs-io-state-store
