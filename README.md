@@ -1,4 +1,6 @@
-# Typescript Node API Starter
+**While the project can still be used for reference, the reality is that it has aged and no longer reflects best practices. To make this clear, the project is now archived.**
+
+# Typescript Node API Starter (Archived)
 
 [![CircleCI](https://circleci.com/gh/feredean/node-api-starter.svg?style=shield)](https://circleci.com/gh/feredean/node-api-starter)
 
